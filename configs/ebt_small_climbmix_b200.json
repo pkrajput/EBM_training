@@ -1,6 +1,8 @@
 {
   "data": {
-    "sequence_length": 2048
+    "sequence_length": 512,
+    "train_buffer_documents": 2048,
+    "eval_buffer_documents": 512
   },
   "model": {
     "model_size_label": "small",
@@ -13,7 +15,7 @@
   "train": {
     "run_name": "ebt-small-climbmix-b200",
     "out_dir": "runs/ebt_small_climbmix_b200",
-    "device_batch_size": 4,
+    "device_batch_size": 16,
     "gradient_accumulation_steps": 32,
     "precision": "bf16",
     "compile_model": false,

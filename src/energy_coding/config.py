@@ -124,6 +124,10 @@ class TrainConfig:
     early_stop_humaneval: float = 0.0
     require_humaneval_for_stop: bool = False
     minimum_tokens_before_stop: int = 8_000_000_000
+    # If train_loss_ema doesn't beat its all-time best for this many *training
+    # steps*, stop. Disabled when set to <= 0. Set to e.g. 1500 to detect
+    # divergence on small runs.
+    loss_patience_steps: int = -1
     wandb_project: str = "energy-coding-pretrain"
     wandb_entity: str | None = None
     resume: bool = True

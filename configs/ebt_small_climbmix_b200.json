@@ -28,10 +28,11 @@
     "humaneval_interval": 2000,
     "humaneval_max_problems": 16,
     "humaneval_self_verify_samples": 1,
-    "target_tokens": 8000000000,
+    "target_tokens": 50000000000,
     "max_steps": -1,
     "early_stop_core": 0.257,
-    "minimum_tokens_before_stop": 2000000000,
+    "minimum_tokens_before_stop": 1000000000,
+    "loss_patience_steps": 1500,
     "wandb_project": "energy-coding-pretrain-small"
   },
   "optim": {

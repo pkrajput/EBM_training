@@ -242,6 +242,8 @@ def main() -> None:
     smooth_loss = None
     t0 = time.time()
     last_metrics: dict = {}
+    best_loss_ema = float("inf")
+    last_best_step = start_step
 
     for step in range(start_step, config.train.max_steps):
         train_model.train()
@@ -284,6 +286,11 @@ def main() -> None:
         loss_value = float(loss.detach().item())
         smooth_loss = loss_value if smooth_loss is None else 0.9 * smooth_loss + 0.1 * loss_value
 
+        if master:
+            if smooth_loss is not None and smooth_loss < best_loss_ema:
+                best_loss_ema = float(smooth_loss)
+                last_best_step = step
+
         if master and step % config.train.log_interval == 0:
             dt = time.time() - t0
             t0 = time.time()
@@ -299,6 +306,8 @@ def main() -> None:
                 "tokens_seen": tokens_seen,
                 "train_loss": loss_value,
                 "train_loss_ema": smooth_loss,
+                "train_loss_ema_best": best_loss_ema,
+                "train_steps_since_best": step - last_best_step,
                 "lr": optimizer.param_groups[0]["lr"],
                 "tok_per_sec": tok_per_sec,
                 "ebt/alpha_step_size": alpha_value,
@@ -310,6 +319,7 @@ def main() -> None:
                 wandb_run.log(metrics)
             print(
                 f"step {step:07d} | loss {loss_value:.4f} | ema {smooth_loss:.4f} | "
+                f"best_ema {best_loss_ema:.4f} (+{step - last_best_step} steps) | "
                 f"lr {metrics['lr']:.2e} | alpha {alpha_value:.3f} | "
                 f"tok/s {tok_per_sec:,.0f} | tokens {tokens_seen:,}",
                 flush=True,
@@ -401,6 +411,20 @@ def main() -> None:
             dist.barrier()
 
         stop_now = False
+        diverging = False
+        if master and config.train.loss_patience_steps > 0 and smooth_loss is not None:
+            # Don't trigger during LR warmup — loss can wobble while LR ramps.
+            past_warmup = step > config.optim.warmup_steps
+            if past_warmup and (step - last_best_step) > config.train.loss_patience_steps:
+                diverging = True
+                print(
+                    "Stopping: train_loss_ema "
+                    f"{smooth_loss:.4f} has not improved on best ({best_loss_ema:.4f}) "
+                    f"for {step - last_best_step} steps "
+                    f"(loss_patience_steps={config.train.loss_patience_steps}).",
+                    flush=True,
+                )
+
         if master and last_metrics:
             core_ok = last_metrics.get("core_metric", -1.0) >= config.train.early_stop_core
             if config.train.require_humaneval_for_stop:
@@ -410,8 +434,8 @@ def main() -> None:
             else:
                 humaneval_ok = True
             enough_tokens = tokens_seen >= config.train.minimum_tokens_before_stop
-            stop_now = bool(core_ok and humaneval_ok and enough_tokens)
-            if stop_now:
+            core_hit = bool(core_ok and humaneval_ok and enough_tokens)
+            if core_hit:
                 print(
                     "Early stop target reached: "
                     f"CORE={last_metrics.get('core_metric')}, "
@@ -419,6 +443,9 @@ def main() -> None:
                     f"tokens={tokens_seen:,}",
                     flush=True,
                 )
+            stop_now = core_hit or diverging
+        elif master:
+            stop_now = diverging
 
         if ddp:
             flag = torch.tensor(int(stop_now), device=device)

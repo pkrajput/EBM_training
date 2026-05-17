@@ -1,0 +1,19 @@
+{
+  "train": {
+    "run_name": "ebt-1b-climbmix-h100",
+    "out_dir": "runs/ebt_1b_climbmix_h100",
+    "device_batch_size": 4,
+    "gradient_accumulation_steps": 8,
+    "precision": "bf16",
+    "compile_model": true,
+    "resume": true
+  },
+  "post_train": {
+    "out_dir": "runs/ebt_1b_sft_h100",
+    "run_name": "ebt-1b-sft-h100",
+    "device_batch_size": 1,
+    "gradient_accumulation_steps": 64,
+    "precision": "bf16",
+    "compile_model": true
+  }
+}

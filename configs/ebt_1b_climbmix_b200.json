@@ -1,0 +1,19 @@
+{
+  "train": {
+    "run_name": "ebt-1b-climbmix-b200",
+    "out_dir": "runs/ebt_1b_climbmix_b200",
+    "device_batch_size": 16,
+    "gradient_accumulation_steps": 8,
+    "precision": "bf16",
+    "compile_model": true,
+    "resume": true
+  },
+  "post_train": {
+    "out_dir": "runs/ebt_1b_sft_b200",
+    "run_name": "ebt-1b-sft-b200",
+    "device_batch_size": 4,
+    "gradient_accumulation_steps": 32,
+    "precision": "bf16",
+    "compile_model": true
+  }
+}

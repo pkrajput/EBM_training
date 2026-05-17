@@ -1,0 +1,498 @@
+================================================================================
+ENERGY-CODING EBT IMPROVEMENT ANALYSIS
+================================================================================
+Date: April 2, 2026
+Target: GPT-2 level performance (~300M-1.6B params), with coding capability
+References:
+  - This repo: energy-coding/
+  - EBT paper repo: https://github.com/alexiglad/ebt
+  - nanochat (Karpathy GPT-2): https://github.com/karpathy/nanochat
+
+================================================================================
+QUESTION 1: CODE REVIEW — WHAT TO IMPROVE
+================================================================================
+
+The codebase has several critical issues that are likely degrading performance.
+Listed from most impactful to least:
+
+1.1 CRITICALLY SMALL EFFECTIVE BATCH SIZE
+--------------------------------------------------------------------------
+File: job_scripts/pretrain/ebt.sh (lines 17-18)
+  --batch_size_per_device=1
+  --accumulate_grad_batches=1
+
+With 8 GPUs, this gives a global batch of only 8 sequences × 512 tokens =
+4,096 tokens per step. This is ~128x smaller than what nanochat uses.
+
+nanochat uses a total batch size of 524,288 tokens (auto-computed via scaling
+laws), with device_batch_size=32 and sequence_len=2048 on 8xH100.
+(nanochat/scripts/base_train.py line 61: --total-batch-size default -1, auto-
+computed; line 274: B_REF = 2**19 = 524,288 for d12 reference model)
+
+The EBT paper repo (EBT/job_scripts/nlp/pretrain/ebt_s1.sh) also uses larger
+batches: batch_size_per_device=32, context_length=2048, accumulate_grad_batches=2
+for an effective 32×2048×2=131,072 tokens per GPU.
+
+FIX: Increase accumulate_grad_batches significantly. Target ~500K tokens per
+step. With batch=1, ctx=512, 8 GPUs: need accumulate_grad_batches ~= 128.
+Better yet: increase batch_size_per_device as high as VRAM allows (e.g., 8-16)
+and use accumulate_grad_batches to reach ~500K tokens total.
+
+1.2 TRAINING IN FLOAT32 BY DEFAULT
+--------------------------------------------------------------------------
+File: train.py (line 141)
+  "force_float32": True
+
+This defaults forces ALL training to float32, regardless of GPU capability.
+The job scripts do not override this. This wastes 2x memory and 2x compute.
+
+nanochat uses bfloat16 by default on A100/H100 (nanochat/common.py auto-detects)
+and even supports FP8 on Hopper GPUs (nanochat/scripts/base_train.py line 47:
+--fp8 flag).
+
+FIX: Set force_float32=False. Use bfloat16 on A100/H100, or at minimum float16
+with GradScaler (which the code already supports).
+
+1.3 SHORT CONTEXT LENGTH (512 vs 2048)
+--------------------------------------------------------------------------
+File: job_scripts/pretrain/ebt.sh (line 18)
+  --context_length=512
+
+The EBT paper's own NLP scripts use 2048 context (EBT/job_scripts/nlp/pretrain/
+ebt_s1.sh). nanochat uses 2048 (nanochat/scripts/base_train.py line 53:
+--max-seq-len default 2048). OpenWebText documents are often >512 tokens, so a
+short context means the model never learns long-range dependencies.
+
+FIX: Use context_length=2048. This is standard for GPT-2 class models.
+
+1.4 PLAIN ADAMW OPTIMIZER (MISSING MUON/ADVANCED OPTIMIZERS)
+--------------------------------------------------------------------------
+File: train.py (lines 872-877)
+  optimizer = torch.optim.AdamW(
+      raw_model.parameters(),
+      lr=hparams.peak_learning_rate,
+      weight_decay=weight_decay,
+      betas=(beta1, beta2),
+  )
+
+This is a single parameter group AdamW with uniform LR for all params.
+
+nanochat uses a combined Muon+AdamW optimizer (MuonAdamW) with 7+ separate
+parameter groups, each with tuned LR and betas:
+  - Matrix params: Muon optimizer (lr=0.02, momentum=0.95)
+  - Embedding: AdamW (lr=0.2, betas=(0.8, 0.995))
+  - Unembedding/lm_head: AdamW (lr=0.004, betas=(0.8, 0.96))
+  - Scalars: AdamW (lr=0.5, betas=(0.8, 0.95))
+  - LR scaling ∝ 1/√(d_model/768)
+(nanochat/gpt.py lines 369-409: setup_optimizer method)
+
+The EBT paper repo uses PyTorch Lightning's configure_optimizers with AdamW,
+but with more careful hyperparameter selection.
+
+FIX: At minimum, separate parameter groups with different LRs for embeddings
+vs attention/MLP weights vs output head. Consider implementing Muon for the
+matrix parameters.
+
+1.5 COSINE LR SCHEDULE WITHOUT WARMDOWN
+--------------------------------------------------------------------------
+File: train.py (lines 973-981)
+  def get_lr(it):
+      if it < warmup_iters: return linear_warmup
+      if it > lr_decay_iters: return min_lr
+      return cosine_decay_from_warmup_to_lr_decay_iters
+
+nanochat uses a linear warmup → constant → linear warmdown schedule:
+(nanochat/scripts/base_train.py lines 360-369)
+  - 40 steps warmup
+  - Constant LR
+  - 65% of training as warmdown (warmdown_ratio=0.65)
+  - Final LR = 5% of peak (final_lr_frac=0.05)
+
+Also nanochat has a Muon momentum schedule (warmup to 0.97, warmdown to 0.90)
+and cosine weight decay schedule (decays to zero). These refinements matter.
+
+FIX: Switch to warmup→constant→linear_warmdown schedule. The very long warmdown
+is key — nanochat uses 65% of training for warmdown.
+
+1.6 NO torch.compile()
+--------------------------------------------------------------------------
+File: train.py (lines 847-849)
+  if compile:
+      model = torch.compile(model)
+
+compile=False by default. torch.compile gives 15-30% throughput improvement.
+nanochat compiles by default (base_train.py line 246).
+
+FIX: Enable torch.compile by default.
+
+1.7 INSTRUCT FINE-TUNING HAS NO LR SCHEDULE
+--------------------------------------------------------------------------
+File: train_instruct.py (line 279)
+  optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
+
+No warmup, no decay, no weight decay, no beta tuning. Default LR=3e-3 is very
+high for fine-tuning. Default AdamW betas are (0.9, 0.999) vs the (0.9, 0.95)
+used in pretraining.
+
+nanochat SFT (nanochat/scripts/chat_sft.py lines 132-161):
+  - Inherits optimizer state from pretraining (momentum buffers)
+  - Uses init_lr_frac=0.8 of base LR
+  - warmdown_ratio=0.5
+  - final_lr_frac=0.0 (decays to zero)
+  - weight_decay=0.0 (pretraining already decayed it)
+
+FIX: Add LR warmup + warmdown to instruct fine-tuning. Lower the LR (1e-4 to
+5e-5 is typical for fine-tuning). Use same betas as pretraining. Consider
+inheriting optimizer state.
+
+1.8 MISSING DATA LOADER OPTIMIZATIONS
+--------------------------------------------------------------------------
+File: train.py (lines 706-715)
+  def get_batch(split):
+      data = np.memmap(...)
+      ix = torch.randint(...)
+      x = torch.stack([torch.from_numpy(data[i:i+block_size+1]...) for i in ix])
+      return {"input_ids": x.unsqueeze(1)}
+
+This randomly samples from a flat binary file with no document boundary
+awareness. Sequences can start mid-sentence and span document boundaries.
+
+nanochat's BOS-aligned bestfit dataloader (nanochat/dataloader.py) ensures:
+  - Every row starts with BOS
+  - Documents packed using best-fit algorithm
+  - 100% utilization (no padding)
+  - Proper document boundaries
+  - Pinned memory + async GPU transfer
+  - State tracking for resumption
+
+FIX: Implement BOS-aligned document packing, or at minimum ensure sequences
+respect document boundaries.
+
+1.9 strict=False ON ALL CHECKPOINT LOADS
+--------------------------------------------------------------------------
+File: train.py (line 922), train_instruct.py (line 259), Programing/train.py
+(line 142), test_core.py (line 209), test_humaneval.py (line 338)
+
+Every checkpoint load uses strict=False, which silently ignores missing or
+extra keys. This can mask architecture mismatches or partially loaded models.
+
+FIX: Use strict=True and fix any key mismatches explicitly.
+
+1.10 Programing/train.py HAS execution_mode="pretrain" FOR FINE-TUNING
+--------------------------------------------------------------------------
+File: Programing/train.py (line 77)
+  execution_mode="pretrain"
+
+This should be "finetune" since it's loading a pretrained checkpoint and
+fine-tuning on code data. The execution_mode affects the EBT model's internal
+behavior (e.g., MCMC dynamics, replay buffer).
+
+FIX: Set execution_mode="finetune".
+
+1.11 print_dataset.py IS EMPTY
+--------------------------------------------------------------------------
+File: print_dataset.py — completely empty, no implementation.
+
+1.12 test_humaneval.py HAS WRONG PROJECT_ROOT
+--------------------------------------------------------------------------
+File: test_humaneval.py (line 17)
+  PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+This file sits at the repo root, so .parents[1] points one level ABOVE the
+repo. Should be .parent (like every other root-level script).
+
+FIX: Change to Path(__file__).resolve().parent
+
+================================================================================
+QUESTION 2: WHAT DATASETS TO ADD
+================================================================================
+
+Current pretraining data: OpenWebText (~8B tokens of Reddit-curated web text)
+Current fine-tuning data: yizhongw/self_instruct (~82K instruction examples)
+Current code data: bigcode/the-stack Python subset (streaming, only 1000 samples)
+
+For reference, nanochat's progression:
+  - Started with FinewebEdu-100B (100B tokens of educational web text)
+  - Upgraded to NVIDIA ClimbMix-400B (March 2026, entry #4 in leaderboard)
+    (nanochat/dataset.py: BASE_URL points to karpathy/climbmix-400b-shuffle)
+  - This dataset change alone cut time-to-GPT-2 from 2.76h to 2.02h
+  - Uses ~170 shards for GPT-2 training (speedrun.sh line: dataset -n 170)
+  - Each shard ~100MB compressed, total ~17GB of text
+
+2.1 FOR PRETRAINING — UPGRADE FROM OPENWEBTEXT
+--------------------------------------------------------------------------
+OpenWebText is ~8B tokens. This is far too small for a 300M+ model. GPT-2
+(1.5B params) was trained on 40B tokens. The Chinchilla-optimal ratio is ~20
+tokens per parameter. For a 300M model, you want ~6B tokens minimum, and for
+800M model, ~16B tokens.
+
+RECOMMENDED DATASETS (in order of priority):
+a) NVIDIA ClimbMix-400B: What nanochat switched to in March 2026.
+   This is a curated, shuffled mix that gave the biggest single improvement
+   in nanochat's leaderboard (entry #4: 2.76h → 2.02h).
+   Available: huggingface.co/datasets/karpathy/climbmix-400b-shuffle
+
+b) FineWebEdu (HuggingFace): 100B tokens of educational web text, filtered
+   from CommonCrawl. nanochat used this before ClimbMix. Good fallback.
+   Available: huggingface.co/datasets/HuggingFaceFW/fineweb-edu
+
+c) RedPajama v2: Open reproduction of LLaMA training data. Contains web,
+   books, Wikipedia, code, etc. Good diversity.
+
+d) The Pile (EleutherAI): 800GB diverse text corpus (academic papers, books,
+   code, web). Well-established.
+
+e) SlimPajama: Cleaned/deduplicated version of RedPajama. 627B tokens.
+
+KEY POINT: The EBT paper's own XL model (job_scripts/pretrain/xl_ebt.sh)
+uses the Pajama dataset, not OpenWebText. Follow that lead.
+
+2.2 FOR SFT — EXPAND FROM SELF-INSTRUCT
+--------------------------------------------------------------------------
+self_instruct has only ~82K examples. nanochat's SFT mixture
+(nanochat/scripts/chat_sft.py lines 165-173) is much richer:
+
+a) SmolTalk: 460K rows of general conversations (from HuggingFace)
+b) Custom identity conversations: 1000 rows for personality
+c) MMLU: 100K rows × 3 epochs = 300K for multiple-choice reasoning
+d) GSM8K: 8K rows × 4 epochs = 32K for math and tool use
+e) SimpleSpelling: 200K rows for character-level understanding
+f) SpellingBee: 80K rows for counting/spelling tasks
+
+Total: ~1M+ conversation rows in the SFT mixture.
+
+RECOMMENDED SFT ADDITIONS:
+a) SmolTalk (HuggingFaceTB/smoltalk) — general conversation ability
+b) MMLU auxiliary_train — teaches multiple-choice reasoning format
+c) GSM8K — teaches math reasoning with chain-of-thought
+d) OpenAssistant Conversations (OASST) — diverse human-assistant convos
+e) Code-specific (see Question 4 below)
+
+2.3 FOR CODE — ADD SUBSTANTIAL CODE DATA
+--------------------------------------------------------------------------
+Currently: 1000 samples from The Stack (Programing/train.py line 113).
+This is essentially nothing.
+
+RECOMMENDED CODE DATASETS:
+a) The Stack v2 (bigcode/the-stack-v2): Improved version, better licensing
+b) StarCoder training data: Code-specific, well-curated
+c) CodeParrot (codeparrot/github-code): GitHub code, multiple languages
+d) CodeSearchNet: 6M functions with docstrings
+e) APPS: 10K coding problems with solutions
+f) CodeContests: Competitive programming problems
+
+For pretraining: Mix 10-20% code into the pretraining corpus.
+For fine-tuning: Use code-specific instruction datasets (see Q4).
+
+================================================================================
+QUESTION 3: PRETRAINING vs POST-TRAINING — WHERE TO FOCUS
+================================================================================
+
+VERDICT: PRETRAINING FIRST, then targeted post-training.
+
+3.1 YOUR MODEL IS UNDERTRAINED AT THE PRETRAINING LEVEL
+--------------------------------------------------------------------------
+The CORE metric results (core_mcmc_sweep.csv) show:
+
+  MCMC Steps | CORE Metric
+  1          | -0.0112
+  10         | -0.0112
+  20         | -0.0181
+  30         | -0.0186
+
+These scores are NEGATIVE — below random baseline on most tasks. For comparison,
+nanochat's GPT-2 target is CORE = 0.2565 (nanochat README leaderboard). Your
+model is at -0.01, which is ~0.27 points below GPT-2.
+
+No amount of post-training can fix a model that hasn't learned basic language
+understanding. The foundation must be solid first.
+
+3.2 EVIDENCE FROM NANOCHAT: PRETRAINING IS THE BOTTLENECK
+--------------------------------------------------------------------------
+nanochat's leaderboard (README) shows that all major improvements came from
+pretraining changes:
+  - Entry #1 → #2: FP8 training (pretraining efficiency)
+  - Entry #2 → #3: Larger batch size (pretraining hyperparams)
+  - Entry #3 → #4: Better dataset (pretraining data)
+  - Entry #4 → #5: Autoresearch round 1 (pretraining optimization)
+  - Entry #5 → #6: Autoresearch round 2 (pretraining optimization)
+
+SFT is done AFTER pretraining converges and takes relatively little time
+(nanochat SFT runs for ~1 epoch over the task mixture).
+
+3.3 THE MCMC SWEEP SHOWS NO EBT BENEFIT YET
+--------------------------------------------------------------------------
+The MCMC sweep (1→30 steps) shows no improvement, suggesting the energy
+landscape isn't well-formed. This is a pretraining problem. The EBT's energy
+function must first learn useful representations during pretraining before
+System 2 thinking (more MCMC steps) can help.
+
+The EBT paper (Section 4) shows that EBTs only outscale transformers when
+properly trained to convergence. Undertrained EBTs actually perform worse
+because the energy landscape is noisy.
+
+3.4 RECOMMENDED PHASED APPROACH
+--------------------------------------------------------------------------
+Phase 1 — Fix pretraining (most critical):
+  - Fix batch size (→500K tokens/step)
+  - Fix dtype (→bfloat16)
+  - Fix context (→2048)
+  - Upgrade dataset (→ClimbMix or FineWebEdu)
+  - Improve optimizer (separate param groups, Muon)
+  - Add torch.compile, proper LR schedule
+  - Train to Chinchilla-optimal tokens (20× params)
+  - Monitor val_bpb and CORE metric during training
+
+Phase 2 — Validate EBT energy landscape:
+  - Re-run MCMC sweep on the properly pretrained model
+  - If MCMC steps 2-10 show improvement: EBT is working
+  - If no improvement: debug the energy function (step size, noise, etc.)
+
+Phase 3 — Post-training:
+  - SFT with diverse mixture (SmolTalk + MMLU + GSM8K + code)
+  - Coding-specific fine-tuning (see Question 4)
+  - RL if needed (nanochat includes chat_rl.py)
+
+Phase 4 — Evaluate:
+  - CORE metric (target: >0.256525 for GPT-2 parity)
+  - HumanEval (target: ~10-15% pass@1 for GPT-2 level)
+  - ChatCORE (nanochat's chat-level metric)
+
+================================================================================
+QUESTION 4: TARGETING CODING TASKS — GPT-2 LEVEL VIA POST-TRAINING
+================================================================================
+
+GPT-2 (1.5B) achieves roughly 0% on HumanEval and minimal coding ability.
+But fine-tuned models of similar size (e.g., CodeGen-350M, StarCoder-1B) can
+reach 10-15% pass@1 on HumanEval. That's your realistic target.
+
+4.1 POST-TRAINING PIPELINE FOR CODING
+--------------------------------------------------------------------------
+Step 1: Code-Aware SFT (most important)
+  Datasets:
+  a) CodeAlpaca (sahil2801/CodeAlpaca-20k): 20K coding instruction pairs
+  b) Code Feedback (m-a-p/Code-Feedback): Instruction-tuned code conversations
+  c) Evol-Instruct-Code (WizardLMTeam): Code instructions with complexity
+  d) OSS-Instruct: Open-source code instruction data
+  e) Self-instruct on code tasks: Generate code instruction data from
+     your own model (your repo already has self-instruct infrastructure)
+
+  Format: Use nanochat-style conversation format:
+    User: "Write a function that sorts a list using merge sort"
+    Assistant: "```python\ndef merge_sort(arr):\n    ...\n```"
+
+Step 2: Code Completion Fine-Tuning
+  Datasets:
+  a) The Stack v2 (Python subset): Continuous code for next-token prediction
+  b) StarCoder Data: Better filtered than The Stack
+  c) GitHub Code (codeparrot): Good variety
+
+  Method: Standard causal language modeling on raw code. Use the existing
+  Programing/train.py structure but:
+  - Fix execution_mode to "finetune"
+  - Use WAY more data (100K+ samples, not 1000)
+  - Add validation
+  - Add LR schedule
+  - Add checkpointing
+
+Step 3: Code-Specific Evaluation
+  a) HumanEval (already implemented in test_humaneval.py):
+     - Fix the PROJECT_ROOT bug first
+     - Target: 10-15% pass@1 for GPT-2 level
+  b) MBPP (Mostly Basic Python Problems): 974 problems
+  c) DS-1000: Data science coding problems
+
+4.2 EBT-SPECIFIC CODING ADVANTAGE (THE RESEARCH ANGLE)
+--------------------------------------------------------------------------
+The EBT's MCMC refinement should theoretically help with code generation:
+  - Code has a much tighter "correctness" constraint than natural language
+  - More MCMC steps = more refinement of the predicted token distribution
+  - The energy function can learn that syntactically valid code has lower energy
+
+To test this hypothesis:
+a) After proper pretraining + code SFT, run HumanEval with varying MCMC steps
+b) If MCMC=10 beats MCMC=1, the EBT is providing "thinking" benefit for code
+c) This is your paper's main contribution claim
+
+To implement:
+  - Use the existing test_humaneval.py with --mcmc_num_steps sweep
+  - Also use --infer_ebt_advanced for the advanced EBT inference mode
+  - Compare: standard inference vs advanced EBT inference at various MCMC steps
+
+4.3 PRACTICAL IMPLEMENTATION PLAN
+--------------------------------------------------------------------------
+1. Fix pretraining (see Section 3.4 Phase 1) — this is prerequisite
+
+2. Code SFT script: Create a proper code fine-tuning script based on
+   train_instruct.py but with:
+   - Multiple code datasets mixed together
+   - Proper LR schedule (warmup + warmdown)
+   - Separate parameter groups
+   - Validation on held-out code
+   - CORE + HumanEval evaluation during training
+
+3. Data preparation: Build a code instruction mixture:
+   - 20K CodeAlpaca examples (instruction-following)
+   - 50K+ StarCoder/The Stack Python examples (code completion)
+   - 10K+ MBPP/APPS examples (problem-solving)
+   - Format all as conversations with BOS alignment
+
+4. Training recipe:
+   - Start from best pretrained EBT checkpoint
+   - LR: 5e-5 to 2e-4 (much lower than pretraining)
+   - Batch size: same as pretraining
+   - Duration: 1-3 epochs over the code mixture
+   - Save checkpoints every 500 steps
+   - Evaluate HumanEval + MBPP at each checkpoint
+
+5. Hyperparameter tuning for code:
+   - mcmc_num_steps: sweep 1, 2, 5, 10 during fine-tuning
+   - mcmc_step_size: may need to be different for code vs text
+   - Temperature for code generation: lower (0.2-0.4) for correctness
+
+4.4 NANOCHAT'S CODING EVALUATION AS REFERENCE
+--------------------------------------------------------------------------
+nanochat evaluates HumanEval as part of ChatCORE (nanochat/scripts/chat_sft.py
+line 369: all_tasks includes 'HumanEval'). The implementation is in
+nanochat/tasks/humaneval.py, which your test_humaneval.py is based on.
+
+nanochat's SFT mixture does NOT include coding-specific data — it relies on
+the pretrained model having seen code in the pretraining corpus (ClimbMix
+includes code). For GPT-2 level, basic coding ability emerges from pretraining
+if the corpus includes enough code (~10-15% of tokens).
+
+For your EBT, you may need explicit code fine-tuning because:
+  - OpenWebText has very little code
+  - Even with a better pretraining corpus, the EBT's MCMC mechanism may need
+    specific code exposure to learn useful code energy landscapes
+
+================================================================================
+SUMMARY OF PRIORITIES
+================================================================================
+
+IMMEDIATE (highest impact):
+  1. Fix batch size: accumulate_grad_batches → 128+ (or batch_size=8-16 + accum)
+  2. Fix dtype: force_float32=False, use bfloat16
+  3. Extend context: context_length → 2048
+  4. Upgrade dataset: ClimbMix-400B or FineWebEdu-100B
+  5. Enable torch.compile
+
+SHORT-TERM (next iteration):
+  6. Implement separate optimizer param groups
+  7. Switch to warmup+constant+warmdown LR schedule
+  8. Fix instruct fine-tuning (LR schedule, optimizer config)
+  9. Add BOS-aligned document packing dataloader
+ 10. Fix test_humaneval.py PROJECT_ROOT bug
+
+MEDIUM-TERM (after pretraining converges):
+ 11. Build code SFT mixture (CodeAlpaca + Stack v2 + APPS)
+ 12. Create proper code fine-tuning script
+ 13. Run MCMC sweep on properly trained model to validate EBT benefit
+ 14. Evaluate on HumanEval + MBPP
+
+LONG-TERM (research contributions):
+ 15. Demonstrate MCMC step benefit for code generation (EBT System 2)
+ 16. Compare EBT vs standard transformer at same param count on coding
+ 17. Explore advanced EBT inference for code (self-verification)
+
+================================================================================

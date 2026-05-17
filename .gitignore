@@ -1,0 +1,51 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+hf_cache
+
+gpt-2/ 
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+*.pt
+
+# Large datasets / caches
+.hf_cache/
+wandb/
+live_bench/
+livebench_coding/downloads/
+livebench_coding/test/*.arrow
+nanoGPT/data/
+EBT/data/
+data/
+**/*.bin
+
+# Python build artifacts
+*.egg-info/
+dist/
+build/
+
+# OS-specific files
+.DS_Store
+
+# Project artifacts
+out.txt
+out/
+out_ebt/
+logs/
+checkpoints/
+runs/
+**/*.ckpt
+**/*.pt
+Miniconda3-latest-MacOSX-arm64.sh
+*.tar.gz
+
+# Cloned-on-demand on the GPU box by setup_gpu.sh / setup_gpu_blackwell.sh
+# (not tracked here: keeps pushes fast, avoids submodule churn).
+/EBT/
+/nanochat/

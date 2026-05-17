@@ -30,6 +30,12 @@ fi
 # be a no-op. Allow it to keep failing gracefully if EBT bumps a pin.
 python -m pip install -r EBT/requirements.txt || true
 
+# Upgrade NCCL. PyTorch wheels bundle NCCL 2.26.2 which hangs on init in some
+# containerized envs (verified on vast.ai Blackwell + cu128, likely safer to
+# upgrade everywhere). 2.30.4+ fixes the hang. Torch will print a version-pin
+# warning but the ABI is compatible.
+python -m pip install --upgrade "nvidia-nccl-cu12>=2.30,<3" 2>/dev/null || true
+
 # Make sure the (small) runtime deps that nanochat's core_eval needs are present.
 # We only import `nanochat.core_eval.evaluate_task` and `nanochat.execution.execute_code`.
 python -m pip install --upgrade \

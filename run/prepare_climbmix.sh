@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 source .venv/bin/activate
-export PYTHONPATH="$ROOT/src:$PYTHONPATH"
+export PYTHONPATH="$ROOT/src:${PYTHONPATH:-}"
 
 CONFIG="${CONFIG:-configs/ebt_1b_climbmix.json}"
 NUM_WORKERS="${NUM_WORKERS:-16}"

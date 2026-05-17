@@ -15,6 +15,11 @@ python -m pip install --upgrade pip wheel setuptools
 # Blackwell-compatible deps (torch 2.7 + cu128).
 python -m pip install -r requirements_blackwell.txt
 
+# torch 2.7.1+cu128 bundles nvidia-nccl-cu12==2.26.2 which HANGS on Blackwell
+# during init_process_group inside vast.ai containers. Upgrading to 2.30.4 fixes
+# it; the version-pin warning from torch is benign (the ABI is compatible).
+python -m pip install --upgrade "nvidia-nccl-cu12>=2.30,<3"
+
 # Clone EBT (the upstream Energy-Based Transformer code we wrap).
 if [ ! -d EBT ] || [ -z "$(ls -A EBT 2>/dev/null)" ]; then
   rm -rf EBT

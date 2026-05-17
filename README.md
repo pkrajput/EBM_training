@@ -89,6 +89,26 @@ that matches your box:
 > first matmul. Use `run/setup_gpu_blackwell.sh` (installs `torch==2.7.1+cu128`)
 > for any Blackwell card (B200, RTX PRO 6000, RTX 5090, GB200).
 
+### Memory notes (learned the hard way on 4× RTX PRO 6000)
+
+EBT's autoregressive variant concatenates input and prediction embeddings, so
+the attention tensor is `(bs, heads, 2·seq, 2·seq)` — at `seq=2048, bs=8` that's
+~5 GB per layer × 28 layers = ~140 GB of activations *per MCMC sweep*. Combined
+with `no_mcmc_detach=True` (which keeps the autograd graph across MCMC sweeps),
+peak memory is `2-4 × bs × 4·seq² × heads × dtype × n_layers`.
+
+- The default (8×H200, `configs/ebt_1b_climbmix.json`) ships the paper's strict
+  S2 recipe with `no_mcmc_detach=true`, `mcmc_replay_buffer=true`,
+  `compile_model=true`. This needs ~120 GB headroom per GPU — fine on H200
+  (141 GB) but **OOMs on H100 (80 GB) and RTX PRO 6000 (95 GB)** even at bs=1.
+- The H100/B200/RTX 6000 overlay configs disable `no_mcmc_detach`,
+  `mcmc_replay_buffer`, and `compile_model` by default. You still get all the
+  other paper-required regularizers (random α, random num steps, Langevin
+  noise) — just the autograd graph doesn't bridge MCMC sweeps.
+- If you actually have a 141 GB+ GPU and want the strict S2 recipe, override:
+  `MCMC_REPLAY_BUFFER=true NO_MCMC_DETACH=true bash run/train_1b_h200.sh`
+  (today this requires editing the JSON; let me know if you want env-var hooks).
+
 Per-config tokens-per-step:
 
 ```text

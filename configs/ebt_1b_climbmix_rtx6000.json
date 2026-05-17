@@ -1,19 +1,26 @@
 {
+  "data": {
+    "sequence_length": 1024
+  },
+  "model": {
+    "no_mcmc_detach": false,
+    "mcmc_replay_buffer": false
+  },
   "train": {
     "run_name": "ebt-1b-climbmix-rtx6000",
     "out_dir": "runs/ebt_1b_climbmix_rtx6000",
-    "device_batch_size": 8,
-    "gradient_accumulation_steps": 8,
+    "device_batch_size": 1,
+    "gradient_accumulation_steps": 128,
     "precision": "bf16",
-    "compile_model": true,
+    "compile_model": false,
     "resume": true
   },
   "post_train": {
     "out_dir": "runs/ebt_1b_sft_rtx6000",
     "run_name": "ebt-1b-sft-rtx6000",
-    "device_batch_size": 2,
-    "gradient_accumulation_steps": 64,
+    "device_batch_size": 1,
+    "gradient_accumulation_steps": 128,
     "precision": "bf16",
-    "compile_model": true
+    "compile_model": false
   }
 }

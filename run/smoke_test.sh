@@ -10,7 +10,7 @@ export NCCL_DEBUG="${NCCL_DEBUG:-WARN}"
 export TORCH_NCCL_ASYNC_ERROR_HANDLING=1
 export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
-export PYTHONPATH="$ROOT/src:$PYTHONPATH"
+export PYTHONPATH="$ROOT/src:${PYTHONPATH:-}"
 
 python scripts/prepare_data.py \
   --config configs/smoke_test.json \

@@ -1,0 +1,53 @@
+{
+  "data": {
+    "sequence_length": 512,
+    "train_buffer_documents": 2048,
+    "eval_buffer_documents": 512
+  },
+  "model": {
+    "model_size_label": "small",
+    "num_transformer_blocks": 12,
+    "multiheaded_attention_heads": 12,
+    "embedding_dim": 768,
+    "no_mcmc_detach": false,
+    "mcmc_replay_buffer": false
+  },
+  "optim": {
+    "learning_rate": 0.0006,
+    "warmup_steps": 2000,
+    "warmdown_ratio": 0.5
+  },
+  "train": {
+    "run_name": "ebt-small-climbmix-8x6000",
+    "out_dir": "runs/ebt_small_climbmix_8x6000",
+    "device_batch_size": 16,
+    "gradient_accumulation_steps": 8,
+    "precision": "bf16",
+    "compile_model": false,
+    "resume": true,
+    "log_interval": 10,
+    "eval_interval": 200,
+    "save_interval": 500,
+    "eval_steps": 32,
+    "core_eval_interval": 1000,
+    "core_max_per_task": 100,
+    "eval_mcmc_depths": [1, 2, 4],
+    "humaneval_interval": 2000,
+    "humaneval_max_problems": 16,
+    "humaneval_self_verify_samples": 1,
+    "target_tokens": 50000000000,
+    "max_steps": -1,
+    "early_stop_core": 0.257,
+    "minimum_tokens_before_stop": 1000000000,
+    "loss_patience_steps": 1500,
+    "wandb_project": "energy-coding-pretrain-small"
+  },
+  "post_train": {
+    "out_dir": "runs/ebt_small_sft_8x6000",
+    "run_name": "ebt-small-sft-8x6000",
+    "device_batch_size": 8,
+    "gradient_accumulation_steps": 16,
+    "precision": "bf16",
+    "compile_model": false
+  }
+}

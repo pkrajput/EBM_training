@@ -30,17 +30,44 @@ def _override_mcmc_depth(raw_model, depth: int):
     """Temporarily override MCMC depth on the EBT model for inference-time
     thinking-longer experiments, mirroring the paper's Section 4.1.2 protocol.
 
-    We disable the "extend final landscape" trick (`randomize_mcmc_num_steps=0`)
-    so that the actual number of optimization sweeps is exactly `depth`. The
-    paper's Table 2 shows random num steps is what couples thinking with
-    self-verification gains, but at eval time we want a clean per-depth read.
+    CRITICAL: we can NOT bump `hparams.mcmc_num_steps` past its construction-time
+    value, because `EBT/model/ar_ebt_time_embed.py` builds
+    `self.time_embeddings = nn.Embedding(max_mcmc_steps=hparams.mcmc_num_steps, ...)`
+    at construction. The forward loop uses the *current* `mcmc_num_steps` to
+    range over `step` values, then looks up `time_embeddings(step)`. If
+    current > construction value, that's an OOB lookup -> CUDA assert ->
+    training crash (this was the step-1000 crash on the first 8xRTX6000 run).
+
+    Workaround: keep `mcmc_num_steps` at its original value, but use
+    `randomize_mcmc_num_steps` to make EBT's forward extend the FINAL step
+    landscape `depth` times. The model still does `depth` MCMC sweeps total,
+    but every sweep's `mcmc_step` index is `mcmc_num_steps - 1` (in-range).
+    See EBT/model/nlp/ebt.py lines 95-108 for the loop that handles this.
     """
     hparams = raw_model.hparams
-    keys = ("mcmc_num_steps", "randomize_mcmc_num_steps", "randomize_mcmc_step_size_scale")
+    keys = (
+        "mcmc_num_steps",
+        "randomize_mcmc_num_steps",
+        "randomize_mcmc_num_steps_min",
+        "randomize_mcmc_step_size_scale",
+    )
     saved = {k: getattr(hparams, k) for k in keys}
+    depth = max(1, int(depth))
+    construction_max = saved["mcmc_num_steps"]
     try:
-        hparams.mcmc_num_steps = max(1, int(depth))
-        hparams.randomize_mcmc_num_steps = 0
+        if depth <= construction_max:
+            # Trivial path: just use the model's native mcmc_num_steps
+            hparams.mcmc_num_steps = depth
+            hparams.randomize_mcmc_num_steps = 0
+            hparams.randomize_mcmc_num_steps_min = 0
+        else:
+            # Extended path: keep construction-time mcmc_num_steps so the
+            # time_embeddings lookup stays in range, but repeat the final
+            # step landscape (depth - construction_max + 1) extra times so
+            # the total MCMC sweep count is `depth`.
+            hparams.mcmc_num_steps = construction_max
+            hparams.randomize_mcmc_num_steps = max(0, depth - construction_max)
+            hparams.randomize_mcmc_num_steps_min = 0
         hparams.randomize_mcmc_step_size_scale = 1.0
         yield
     finally:

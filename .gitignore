@@ -49,3 +49,6 @@ Miniconda3-latest-MacOSX-arm64.sh
 # (not tracked here: keeps pushes fast, avoids submodule churn).
 /EBT/
 /nanochat/
+
+# Microsoft Word/Excel lock files
+~$*

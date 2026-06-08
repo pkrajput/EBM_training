@@ -514,13 +514,17 @@ def prepare_sft_jsonl(
     rng = random.Random(seed)
 
     caps = source_caps or {}
+    # Code-heavy default mix: explicit goal is to lift MBPP / HumanEval from
+    # the pretrained baseline. Roughly 35-40% of the resulting examples are
+    # code-related (CodeAlpaca + MBPP + OpenCodeReasoning) when SmolTalk is
+    # capped at 250K.
     sources = _default_sft_sources(
-        max_smoltalk=caps.get("smoltalk", 460_000),
-        max_mmlu=caps.get("mmlu", 100_000),
+        max_smoltalk=caps.get("smoltalk", 250_000),
+        max_mmlu=caps.get("mmlu", 60_000),
         max_gsm8k=caps.get("gsm8k", 8_000),
         max_codealpaca=caps.get("codealpaca", 20_000),
         max_mbpp=caps.get("mbpp", 974),
-        max_open_codereasoning=caps.get("open_codereasoning", 25_000),
+        max_open_codereasoning=caps.get("open_codereasoning", 80_000),
     )
 
     per_source_counts: dict[str, int] = {}

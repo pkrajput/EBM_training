@@ -345,6 +345,11 @@ def main() -> None:
             and step > 0
             and step % config.train.humaneval_interval == 0
         )
+        should_mbpp = (
+            config.train.mbpp_interval > 0
+            and step > 0
+            and step % config.train.mbpp_interval == 0
+        )
 
         if should_eval:
             val_metrics = evaluate_loss(raw_model, build_val_loader(), config.train.eval_steps, autocast_context)
@@ -407,7 +412,17 @@ def main() -> None:
                 wandb_run.log(payload)
             print(f"HumanEval step {step}: pass@1={code_metrics['humaneval_pass_at_1']:.4f}", flush=True)
 
-        if ddp and (should_eval or should_save or should_core or should_humaneval):
+        if master and should_mbpp:
+            from energy_coding.evaluation import evaluate_mbpp
+            mbpp_metrics = evaluate_mbpp(raw_model, config, device)
+            last_metrics.update(mbpp_metrics)
+            payload = {"step": step, "tokens_seen": tokens_seen, **mbpp_metrics}
+            append_metrics(out_dir / "eval_metrics.jsonl", payload)
+            if wandb_run is not None:
+                wandb_run.log(payload)
+            print(f"MBPP step {step}: pass@1={mbpp_metrics['mbpp_pass_at_1']:.4f} bon={mbpp_metrics['mbpp_pass_at_1_bon']:.4f}", flush=True)
+
+        if ddp and (should_eval or should_save or should_core or should_humaneval or should_mbpp):
             dist.barrier()
 
         stop_now = False

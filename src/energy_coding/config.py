@@ -120,6 +120,10 @@ class TrainConfig:
     humaneval_top_k: int = 50
     humaneval_num_samples: int = 1
     humaneval_self_verify_samples: int = 1
+    mbpp_interval: int = -1
+    mbpp_max_problems: int = 32
+    mbpp_max_new_tokens: int = 192
+    mbpp_self_verify_samples: int = 1
     early_stop_core: float = 0.257
     early_stop_humaneval: float = 0.0
     require_humaneval_for_stop: bool = False

@@ -330,17 +330,22 @@ def _generate_one(
     prompt: str,
     config: RunConfig,
     device: str,
+    max_new_tokens: int | None = None,
 ) -> tuple[str, float]:
     """Greedy/temperature decode one continuation and return (text, mean_energy).
     The mean final-step energy is the EBT self-verification signal — lower
-    means the model is more confident the continuation fits the context."""
+    means the model is more confident the continuation fits the context.
+    Defaults to `config.train.humaneval_max_new_tokens` if `max_new_tokens` is
+    not provided (so MBPP can pass its own shorter budget)."""
+    if max_new_tokens is None:
+        max_new_tokens = config.train.humaneval_max_new_tokens
     input_ids = tokenizer.encode(prompt, return_tensors="pt").to(device)
     if input_ids.shape[1] >= config.data.sequence_length:
         input_ids = input_ids[:, -config.data.sequence_length :]
     generated: list[int] = []
     final_energies: list[float] = []
     with torch.enable_grad():
-        for _ in range(config.train.humaneval_max_new_tokens):
+        for _ in range(max_new_tokens):
             predicted_distributions, predicted_energies = raw_model.forward(
                 input_ids,
                 start_pos=0,
@@ -455,6 +460,91 @@ def evaluate_humaneval(model, config: RunConfig, device: str) -> dict[str, float
         "humaneval_self_verify_samples": bon,
     }
     return out
+
+
+def _build_mbpp_prompt(text: str, test_list: list[str]) -> str:
+    """Build a 3-shot-style MBPP prompt: problem description + ONE assertion
+    as a hint, then "```python\\n" to nudge the model into code. Matches the
+    standard MBPP-style prompt used by HumanEval-pack and bigcode-evaluation-harness.
+    """
+    hint = test_list[0] if test_list else ""
+    return (
+        f"You are an expert Python programmer, and here is your task: {text}\n"
+        f"Your code should pass these tests:\n\n{hint}\n\n"
+        "```python\n"
+    )
+
+
+def _build_mbpp_program(completion: str, test_list: list[str]) -> str:
+    """Combine the generated code with the full MBPP test list for sandbox
+    execution. Pulls from a ```python``` block if present, otherwise uses the
+    raw continuation."""
+    extracted = extract_program(completion)
+    test_section = "\n".join(test_list)
+    return f"{extracted}\n\n{test_section}\n"
+
+
+def evaluate_mbpp(model, config: RunConfig, device: str) -> dict[str, float]:
+    """MBPP pass@1 with optional EBT BoN self-verification. MBPP problems are
+    typically simpler than HumanEval and need fewer tokens, so we default to
+    `mbpp_max_new_tokens` (192) rather than HumanEval's 256."""
+    add_dependency_paths(require_nanochat=True)
+    from datasets import load_dataset
+    from nanochat.execution import execute_code
+    from transformers import AutoTokenizer
+
+    raw_model = get_uncompiled_model(model)
+    raw_model.eval()
+    ds = load_dataset(
+        "google-research-datasets/mbpp",
+        "sanitized",
+        split="test",
+        trust_remote_code=True,
+    ).shuffle(seed=42)
+    max_problems = min(len(ds), config.train.mbpp_max_problems)
+    tokenizer = AutoTokenizer.from_pretrained(
+        config.data.tokenizer, clean_up_tokenization_spaces=False
+    )
+
+    bon = max(1, int(config.train.mbpp_self_verify_samples))
+    max_new = int(config.train.mbpp_max_new_tokens)
+    naive_passed = 0
+    bon_passed = 0
+    any_passed = 0
+    total = 0
+
+    for row in ds.select(range(max_problems)):
+        prompt = _build_mbpp_prompt(row["prompt"], row["test_list"])
+        candidates: list[tuple[str, float]] = []
+        per_candidate_pass: list[bool] = []
+        for _ in range(bon):
+            completion, energy = _generate_one(
+                raw_model, tokenizer, prompt, config, device, max_new_tokens=max_new
+            )
+            candidates.append((completion, energy))
+            program = _build_mbpp_program(completion, row["test_list"])
+            try:
+                ok = bool(execute_code(program, timeout=8.0).success)
+            except Exception as exc:
+                print(f"MBPP execution error: {exc}", flush=True)
+                ok = False
+            per_candidate_pass.append(ok)
+        naive_passed += int(per_candidate_pass[0])
+        any_passed += int(any(per_candidate_pass))
+        best_idx = min(range(len(candidates)), key=lambda i: candidates[i][1])
+        bon_passed += int(per_candidate_pass[best_idx])
+        total += 1
+
+    raw_model.train()
+    return {
+        "mbpp_pass_at_1": naive_passed / max(1, total),
+        "mbpp_pass_at_1_bon": bon_passed / max(1, total),
+        "mbpp_pass_at_n": any_passed / max(1, total),
+        "mbpp_passed": naive_passed,
+        "mbpp_passed_bon": bon_passed,
+        "mbpp_total": total,
+        "mbpp_self_verify_samples": bon,
+    }
 
 
 def append_metrics(path: str | Path, metrics: dict) -> None:

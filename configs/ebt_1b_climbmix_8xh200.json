@@ -10,7 +10,7 @@
     "multiheaded_attention_heads": 16,
     "embedding_dim": 2048,
 
-    "mcmc_num_steps": 4,
+    "mcmc_num_steps": 1,
     "mcmc_step_size": 0.5,
     "mcmc_step_size_learnable": true,
     "mcmc_step_size_lr_multiplier": 1.5,
@@ -59,10 +59,10 @@
     "mbpp_max_problems": 32,
     "mbpp_self_verify_samples": 1,
     "mbpp_max_new_tokens": 192,
-    "target_tokens": 6000000000,
+    "target_tokens": 8000000000,
     "max_steps": -1,
     "early_stop_core": 0.257,
-    "minimum_tokens_before_stop": 3000000000,
+    "minimum_tokens_before_stop": 4000000000,
     "loss_patience_steps": 2500,
     "wandb_project": "energy-coding-pretrain-1b"
   },

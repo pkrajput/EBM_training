@@ -16,8 +16,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-PRETRAIN_OUT="runs/ebt_1b_climbmix_8xh200"
-SFT_OUT="runs/ebt_1b_sft_8xh200"
+PRETRAIN_OUT="runs/ebt_210m_climbmix_8xh200"
+SFT_OUT="runs/ebt_210m_sft_8xh200"
 CONFIG="configs/ebt_1b_climbmix_8xh200.json"
 
 ts() { date '+%Y-%m-%d %H:%M:%S'; }

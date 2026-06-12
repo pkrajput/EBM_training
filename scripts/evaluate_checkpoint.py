@@ -8,7 +8,12 @@ from pathlib import Path
 import torch
 
 from energy_coding.config import load_config
-from energy_coding.evaluation import append_metrics, evaluate_core_metric, evaluate_humaneval
+from energy_coding.evaluation import (
+    append_metrics,
+    evaluate_core_metric,
+    evaluate_humaneval,
+    evaluate_mbpp,
+)
 from energy_coding.modeling import build_model, load_checkpoint
 
 
@@ -38,6 +43,7 @@ def main() -> None:
     parser.add_argument("--device", default="auto")
     parser.add_argument("--skip-core", action="store_true")
     parser.add_argument("--skip-humaneval", action="store_true")
+    parser.add_argument("--skip-mbpp", action="store_true")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -52,6 +58,12 @@ def main() -> None:
         metrics.update(evaluate_core_metric(model, config, device))
     if not args.skip_humaneval:
         metrics.update(evaluate_humaneval(model, config, device))
+    if not args.skip_mbpp:
+        # Make sure mbpp_interval is > 0 just to satisfy any downstream config check;
+        # the function itself uses mbpp_max_problems / mbpp_self_verify_samples.
+        if config.train.mbpp_interval <= 0:
+            config.train.mbpp_interval = 1
+        metrics.update(evaluate_mbpp(model, config, device))
 
     out_dir = Path(config.train.out_dir)
     append_metrics(out_dir / "eval_metrics.jsonl", metrics)

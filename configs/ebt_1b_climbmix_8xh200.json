@@ -13,8 +13,8 @@
     "mcmc_num_steps": 2,
     "mcmc_step_size": 0.5,
     "mcmc_step_size_learnable": true,
-    "mcmc_step_size_lr_multiplier": 1.5,
-    "langevin_dynamics_noise": 3.0,
+    "mcmc_step_size_lr_multiplier": 1.0,
+    "langevin_dynamics_noise": 1.0,
     "randomize_mcmc_step_size_scale": 2.0,
     "randomize_mcmc_num_steps": 2,
     "randomize_mcmc_num_steps_min": 1,
@@ -32,10 +32,12 @@
     "scale_alpha_with_energy_temp": 1.0
   },
   "optim": {
-    "learning_rate": 0.0003,
-    "warmup_steps": 1500,
+    "learning_rate": 0.00003,
+    "min_lr_fraction": 0.1,
+    "warmup_steps": 200,
     "warmdown_ratio": 0.5,
-    "weight_decay": 0.1
+    "weight_decay": 0.1,
+    "grad_clip": 0.5
   },
   "train": {
     "run_name": "ebt-210m-climbmix-8xh200",
@@ -63,7 +65,7 @@
     "max_steps": -1,
     "early_stop_core": 0.22,
     "minimum_tokens_before_stop": 2500000000,
-    "loss_patience_steps": 2500,
+    "loss_patience_steps": 400,
     "wandb_project": "energy-coding-pretrain-210m"
   },
   "post_train": {

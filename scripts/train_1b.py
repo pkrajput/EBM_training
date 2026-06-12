@@ -244,6 +244,15 @@ def main() -> None:
     last_metrics: dict = {}
     best_loss_ema = float("inf")
     last_best_step = start_step
+    # Uniform-vocab collapse detector: if the loss sits at ~ln(vocab_size) the
+    # model has degenerated to a uniform next-token distribution and will never
+    # recover (norm_pred makes uniform a stable attractor). Kill fast to save $.
+    try:
+        _vocab_size = int(getattr(raw_model, "vocab_size", tokenizer.vocab_size))
+    except Exception:
+        _vocab_size = len(tokenizer)
+    uniform_loss = math.log(max(_vocab_size, 2))
+    collapse_streak = 0
 
     for step in range(start_step, config.train.max_steps):
         train_model.train()
@@ -290,6 +299,11 @@ def main() -> None:
             if smooth_loss is not None and smooth_loss < best_loss_ema:
                 best_loss_ema = float(smooth_loss)
                 last_best_step = step
+            # Track consecutive steps pinned at the uniform-vocab loss.
+            if abs(loss_value - uniform_loss) < 0.02 and step > 20:
+                collapse_streak += 1
+            else:
+                collapse_streak = 0
 
         if master and step % config.train.log_interval == 0:
             dt = time.time() - t0
@@ -427,7 +441,15 @@ def main() -> None:
 
         stop_now = False
         diverging = False
-        if master and config.train.loss_patience_steps > 0 and smooth_loss is not None:
+        if master and collapse_streak >= 50:
+            diverging = True
+            print(
+                f"Stopping: UNIFORM-VOCAB COLLAPSE detected — train_loss pinned at "
+                f"~ln(vocab)={uniform_loss:.4f} for {collapse_streak} consecutive steps. "
+                f"Model has degenerated; killing to save budget.",
+                flush=True,
+            )
+        if master and not diverging and config.train.loss_patience_steps > 0 and smooth_loss is not None:
             # Don't trigger during LR warmup — loss can wobble while LR ramps.
             past_warmup = step > config.optim.warmup_steps
             if past_warmup and (step - last_best_step) > config.train.loss_patience_steps:

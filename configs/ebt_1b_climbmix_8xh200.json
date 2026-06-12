@@ -6,7 +6,7 @@
   },
   "model": {
     "model_size_label": "1b",
-    "num_transformer_blocks": 20,
+    "num_transformer_blocks": 24,
     "multiheaded_attention_heads": 16,
     "embedding_dim": 2048,
 
@@ -16,8 +16,8 @@
     "mcmc_step_size_lr_multiplier": 1.5,
     "langevin_dynamics_noise": 3.0,
     "randomize_mcmc_step_size_scale": 2.0,
-    "randomize_mcmc_num_steps": 3,
-    "randomize_mcmc_num_steps_min": 2,
+    "randomize_mcmc_num_steps": 0,
+    "randomize_mcmc_num_steps_min": 0,
 
     "mcmc_replay_buffer": true,
     "mcmc_replay_buffer_size": 48,
@@ -59,10 +59,10 @@
     "mbpp_max_problems": 32,
     "mbpp_self_verify_samples": 1,
     "mbpp_max_new_tokens": 192,
-    "target_tokens": 8000000000,
+    "target_tokens": 6000000000,
     "max_steps": -1,
     "early_stop_core": 0.257,
-    "minimum_tokens_before_stop": 4000000000,
+    "minimum_tokens_before_stop": 3000000000,
     "loss_patience_steps": 2500,
     "wandb_project": "energy-coding-pretrain-1b"
   },

@@ -26,9 +26,9 @@
     "no_mcmc_detach": false,
     "clamp_futures_grad": true,
 
-    "norm_pred": true,
+    "norm_pred": false,
     "norm_pred_not_final_step": false,
-    "scale_alpha_with_energy": true,
+    "scale_alpha_with_energy": false,
     "scale_alpha_with_energy_temp": 1.0
   },
   "optim": {

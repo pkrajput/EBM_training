@@ -40,8 +40,8 @@
   "train": {
     "run_name": "ebt-1b-climbmix-8xh200",
     "out_dir": "runs/ebt_1b_climbmix_8xh200",
-    "device_batch_size": 8,
-    "gradient_accumulation_steps": 16,
+    "device_batch_size": 4,
+    "gradient_accumulation_steps": 32,
     "precision": "bf16",
     "compile_model": false,
     "resume": true,

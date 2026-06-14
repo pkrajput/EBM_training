@@ -9,8 +9,16 @@ gpt-2/
 # Virtual environments
 venv/
 .venv/
+.venv_local/
 env/
 .env
+
+# Local debugging scratch outputs (keep .py, ignore generated logs)
+scratch/*_out.txt
+scratch/bf16_test.py
+scratch/depth_test.py
+scratch/fix_test.py
+scratch/final_validate.py
 
 *.pt
 

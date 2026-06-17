@@ -450,15 +450,22 @@ def main() -> None:
                 flush=True,
             )
         if master and not diverging and config.train.loss_patience_steps > 0 and smooth_loss is not None:
-            # Don't trigger during LR warmup — loss can wobble while LR ramps.
+            # Don't trigger during LR warmup (loss wobbles while LR ramps) and
+            # NEVER before the minimum-token floor: at constant peak LR the loss
+            # ema plateaus/bounces for long stretches without setting new bests,
+            # which is NORMAL — it is not divergence. Gating behind min-tokens
+            # prevents the guard from killing a healthy, still-improving run early
+            # (this exact false-stop wasted hours of idle GPU billing once).
             past_warmup = step > config.optim.warmup_steps
-            if past_warmup and (step - last_best_step) > config.train.loss_patience_steps:
+            past_min_tokens = tokens_seen >= config.train.minimum_tokens_before_stop
+            if past_warmup and past_min_tokens and (step - last_best_step) > config.train.loss_patience_steps:
                 diverging = True
                 print(
                     "Stopping: train_loss_ema "
                     f"{smooth_loss:.4f} has not improved on best ({best_loss_ema:.4f}) "
                     f"for {step - last_best_step} steps "
-                    f"(loss_patience_steps={config.train.loss_patience_steps}).",
+                    f"(loss_patience_steps={config.train.loss_patience_steps}, "
+                    f"tokens={tokens_seen:,} >= min {config.train.minimum_tokens_before_stop:,}).",
                     flush=True,
                 )
 

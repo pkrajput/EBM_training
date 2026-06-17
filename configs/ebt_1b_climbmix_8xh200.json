@@ -42,8 +42,8 @@
   "train": {
     "run_name": "ebt-210m-climbmix-8xh200",
     "out_dir": "runs/ebt_210m_climbmix_8xh200",
-    "device_batch_size": 4,
-    "gradient_accumulation_steps": 16,
+    "device_batch_size": 8,
+    "gradient_accumulation_steps": 8,
     "precision": "bf16",
     "compile_model": false,
     "resume": true,
@@ -65,7 +65,7 @@
     "max_steps": -1,
     "early_stop_core": 0.22,
     "minimum_tokens_before_stop": 2500000000,
-    "loss_patience_steps": 400,
+    "loss_patience_steps": 1500,
     "wandb_project": "energy-coding-pretrain-210m"
   },
   "post_train": {

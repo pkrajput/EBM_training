@@ -26,7 +26,7 @@ from energy_coding.modeling import (
     make_optimizer,
     save_checkpoint,
 )
-from train_1b import EBTLossWrapper, init_distributed, precision_context, print0
+from train_191m import EBTLossWrapper, init_distributed, precision_context, print0
 
 
 def latest_checkpoint(out_dir: Path) -> Path | None:

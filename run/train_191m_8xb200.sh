@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# 1.05B EBT pretrain on 8 x H200 SXM (Hopper, 141 GB each).
-# bs=8 * seq=512 * accum=8 * world=8 = 524,288 tokens/optimizer step.
-# Estimated ~25K tok/s -> 6B tokens in ~67 hours.
+# 191M EBT pretrain on 8 x B200 (Blackwell, 183 GB each).
+# bs=8 * seq=512 * accum=8 * world=8 = 262,144 tokens/optimizer step.
+# Observed ~78K tok/s on 8xB200.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -18,5 +18,5 @@ export PYTHONPATH="$ROOT/src:${PYTHONPATH:-}"
 
 GPUS="${GPUS:-8}"
 
-torchrun --standalone --nproc_per_node="$GPUS" scripts/train_1b.py \
-  --config configs/ebt_1b_climbmix_8xh200.json
+torchrun --standalone --nproc_per_node="$GPUS" scripts/train_191m.py \
+  --config configs/ebt_191m_climbmix_8xb200.json

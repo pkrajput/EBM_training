@@ -5,7 +5,7 @@
     "eval_buffer_documents": 512
   },
   "model": {
-    "model_size_label": "210m",
+    "model_size_label": "191m",
     "num_transformer_blocks": 12,
     "multiheaded_attention_heads": 16,
     "embedding_dim": 1024,
@@ -38,8 +38,8 @@
     "grad_spike_mult": 8.0
   },
   "train": {
-    "run_name": "ebt-210m-climbmix-8xh200",
-    "out_dir": "runs/ebt_210m_climbmix_8xh200",
+    "run_name": "ebt-191m-climbmix-8xb200",
+    "out_dir": "runs/ebt_191m_climbmix_8xb200",
     "device_batch_size": 8,
     "gradient_accumulation_steps": 8,
     "precision": "bf16",
@@ -49,32 +49,31 @@
     "eval_interval": 200,
     "save_interval": 250,
     "eval_steps": 32,
-    "core_eval_interval": 1000,
+    "core_eval_interval": 500,
     "core_max_per_task": 100,
     "eval_mcmc_depths": [
       1,
-      2,
-      4
+      2
     ],
-    "humaneval_interval": 2000,
-    "humaneval_max_problems": 32,
+    "humaneval_interval": 1000,
+    "humaneval_max_problems": 10,
     "humaneval_self_verify_samples": 1,
-    "mbpp_interval": 2000,
-    "mbpp_max_problems": 32,
+    "mbpp_interval": 1000,
+    "mbpp_max_problems": 10,
     "mbpp_self_verify_samples": 1,
     "mbpp_max_new_tokens": 192,
-    "target_tokens": 5000000000,
+    "target_tokens": 3000000000,
     "max_steps": -1,
-    "early_stop_core": 0.22,
+    "early_stop_core": 0.1,
     "minimum_tokens_before_stop": 2500000000,
     "loss_patience_steps": 1500,
-    "wandb_project": "energy-coding-pretrain-210m"
+    "wandb_project": "energy-coding-pretrain-191m"
   },
   "post_train": {
     "data_dir": "data/sft",
-    "out_dir": "runs/ebt_210m_sft_8xh200",
-    "run_name": "ebt-210m-sft-8xh200",
-    "wandb_project": "energy-coding-sft-210m",
+    "out_dir": "runs/ebt_191m_sft_8xb200",
+    "run_name": "ebt-191m-sft-8xb200",
+    "wandb_project": "energy-coding-sft-191m",
     "max_train_examples": 400000,
     "max_val_examples": 5000,
     "max_test_examples": 5000,

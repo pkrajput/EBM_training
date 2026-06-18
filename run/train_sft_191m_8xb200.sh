@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# SFT phase for the 1.05B EBT on 8 x H200 SXM. Run AFTER pretraining
-# (run/train_1b_8xh200.sh) reaches its target tokens (or is called directly by
-# run/train_full_pipeline_8xh200.sh on the latest pretrain checkpoint).
+# SFT phase for the 191M EBT on 8 x B200. Run AFTER pretraining
+# (run/train_191m_8xb200.sh) reaches its target tokens (or is called directly by
+# run/train_full_pipeline_8xb200.sh on the latest pretrain checkpoint).
 # Code-heavy mixture is configured in src/energy_coding/data.py.
 set -euo pipefail
 
 if [ "$#" -lt 1 ]; then
-  echo "Usage: bash run/train_sft_1b_8xh200.sh runs/ebt_1b_climbmix_8xh200/ckpt_latest.pt"
+  echo "Usage: bash run/train_sft_191m_8xb200.sh runs/ebt_191m_climbmix_8xb200/ckpt_latest.pt"
   exit 1
 fi
 
@@ -25,5 +25,5 @@ export PYTHONPATH="$ROOT/src:${PYTHONPATH:-}"
 GPUS="${GPUS:-8}"
 
 torchrun --standalone --nproc_per_node="$GPUS" scripts/train_sft.py \
-  --config configs/ebt_1b_climbmix_8xh200.json \
+  --config configs/ebt_191m_climbmix_8xb200.json \
   --base-checkpoint "$1"

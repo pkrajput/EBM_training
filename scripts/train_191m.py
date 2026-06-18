@@ -115,7 +115,7 @@ def latest_checkpoint(out_dir: Path) -> Path | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train the 1B EBT on ClimbMix.")
-    parser.add_argument("--config", default="configs/ebt_1b_climbmix.json")
+    parser.add_argument("--config", default="configs/ebt_191m_climbmix_8xb200.json")
     parser.add_argument("--resume-from", default=None)
     parser.add_argument("--no-resume", action="store_true")
     args = parser.parse_args()

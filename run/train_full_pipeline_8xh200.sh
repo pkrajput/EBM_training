@@ -28,6 +28,16 @@ banner "PHASE A: PRETRAIN (1.05B EBT on ClimbMix)"
 # ----------------------------------------------------------------
 bash run/train_1b_8xh200.sh
 
+# ORCHESTRATION SAFETY: never run SFT if pretrain ended in a uniform collapse.
+# (Previously the pipeline blindly advanced to SFT on a crashed run.)
+if [ -f "${PRETRAIN_OUT}/pretrain_status.json" ]; then
+  if grep -q '"collapsed": true' "${PRETRAIN_OUT}/pretrain_status.json"; then
+    echo "[$(ts)] ERROR: pretrain ended in COLLAPSE (see ${PRETRAIN_OUT}/pretrain_status.json)."
+    echo "[$(ts)] Refusing to run SFT on a collapsed model. Inspect/fix and rerun pretrain."
+    exit 1
+  fi
+fi
+
 LATEST_PRETRAIN_CKPT="$(ls -t ${PRETRAIN_OUT}/ckpt_step_*.pt 2>/dev/null | head -1 || true)"
 if [ -z "$LATEST_PRETRAIN_CKPT" ]; then
   LATEST_PRETRAIN_CKPT="${PRETRAIN_OUT}/ckpt_latest.pt"
@@ -52,7 +62,11 @@ banner "PHASE B: SFT (code-heavy, 3000 steps) starting from $LATEST_PRETRAIN_CKP
 # ----------------------------------------------------------------
 bash run/train_sft_1b_8xh200.sh "$LATEST_PRETRAIN_CKPT"
 
-LATEST_SFT_CKPT="$(ls -t ${SFT_OUT}/ckpt_step_*.pt 2>/dev/null | head -1 || true)"
+# Prefer the BEST (lowest-ema) SFT checkpoint — robust if SFT collapsed late.
+LATEST_SFT_CKPT="${SFT_OUT}/ckpt_best.pt"
+if [ ! -f "$LATEST_SFT_CKPT" ]; then
+  LATEST_SFT_CKPT="$(ls -t ${SFT_OUT}/ckpt_step_*.pt 2>/dev/null | head -1 || true)"
+fi
 if [ -z "$LATEST_SFT_CKPT" ]; then
   LATEST_SFT_CKPT="${SFT_OUT}/ckpt_latest.pt"
 fi

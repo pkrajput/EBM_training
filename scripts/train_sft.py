@@ -167,6 +167,23 @@ def main() -> None:
     batch = next(train_loader)
     smooth_loss = None
     t0 = time.time()
+    # Same defenses as pretrain: SFT also collapsed-to-uniform once (~step 640
+    # after healthy training to loss 1.35). Track grad-norm baseline to skip
+    # spikes, detect uniform collapse to stop fast, and always keep a "best"
+    # checkpoint so a late collapse never costs us the good SFT model.
+    import math as _math
+    from collections import deque
+    try:
+        _vocab_size = int(getattr(raw_model, "vocab_size", tokenizer.vocab_size))
+    except Exception:
+        _vocab_size = len(tokenizer)
+    uniform_loss = _math.log(max(_vocab_size, 2))
+    collapse_streak = 0
+    grad_norm_history: deque[float] = deque(maxlen=100)
+    grad_spike_mult = float(getattr(config.optim, "grad_spike_mult", 0.0) or 8.0)
+    grad_spike_abs = float(getattr(config.optim, "grad_spike_abs", 0.0) or 0.0)
+    skipped_steps = 0
+    best_sft_ema = float("inf")
 
     for step in range(step0, config.post_train.max_steps):
         train_model.train()
@@ -195,19 +212,47 @@ def main() -> None:
             else:
                 scaled_loss.backward()
 
-        if config.optim.grad_clip > 0:
-            if scaler is not None:
-                scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(raw_model.parameters(), config.optim.grad_clip)
         if scaler is not None:
-            scaler.step(optimizer)
-            scaler.update()
+            scaler.unscale_(optimizer)
+        clip_val = config.optim.grad_clip if config.optim.grad_clip > 0 else 1e9
+        total_norm = float(torch.nn.utils.clip_grad_norm_(raw_model.parameters(), clip_val))
+        skip_update = False
+        if not _math.isfinite(total_norm):
+            skip_update = True
+        elif len(grad_norm_history) >= 30:
+            baseline = sorted(grad_norm_history)[len(grad_norm_history) // 2]
+            threshold = grad_spike_mult * max(baseline, 1e-6)
+            if grad_spike_abs > 0:
+                threshold = max(threshold, grad_spike_abs)
+            if total_norm > threshold:
+                skip_update = True
+        if ddp:
+            flag = torch.tensor(int(skip_update), device=device)
+            dist.broadcast(flag, src=0)
+            skip_update = bool(flag.item())
+        if skip_update:
+            skipped_steps += 1
+            optimizer.zero_grad(set_to_none=True)
+            if scaler is not None:
+                scaler.update()
+            if master and skipped_steps % 5 == 1:
+                print0(rank, f"[grad-spike guard] SFT step {step}: SKIPPED (grad_norm={total_norm:.1f}, total={skipped_steps}).")
         else:
-            optimizer.step()
+            if _math.isfinite(total_norm):
+                grad_norm_history.append(total_norm)
+            if scaler is not None:
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                optimizer.step()
 
         sft_tokens_seen += global_tokens_per_step
         loss_value = float(loss.detach().item())
         smooth_loss = loss_value if smooth_loss is None else 0.9 * smooth_loss + 0.1 * loss_value
+        if master and abs(loss_value - uniform_loss) < 0.02 and step > step0 + 20:
+            collapse_streak += 1
+        else:
+            collapse_streak = 0
 
         if master and step % config.post_train.log_interval == 0:
             dt = time.time() - t0
@@ -274,8 +319,32 @@ def main() -> None:
             )
             print0(rank, f"saved SFT checkpoint at step {step}")
 
+        # Always keep the BEST (lowest-ema) SFT checkpoint so a late collapse
+        # can never cost us the good model. Save when we hit a new best at a
+        # save interval boundary (keeps I/O bounded).
+        if master and should_save and smooth_loss is not None and smooth_loss < best_sft_ema:
+            best_sft_ema = float(smooth_loss)
+            save_checkpoint(
+                out_dir / "ckpt_best.pt", raw_model, optimizer, scaler,
+                step, sft_tokens_seen, asdict_nested(config), last_metrics,
+            )
+            print0(rank, f"saved BEST SFT checkpoint at step {step} (ema={best_sft_ema:.4f})")
+
+        # Uniform-collapse kill-switch (SFT collapsed once mid-training). Stop
+        # fast; the BEST checkpoint above preserves the good model for eval.
+        stop_now = False
+        if master and collapse_streak >= 50:
+            print0(rank, f"Stopping SFT: UNIFORM-VOCAB COLLAPSE (~ln(vocab)={uniform_loss:.3f}) for {collapse_streak} steps; best preserved in ckpt_best.pt.")
+            stop_now = True
+        if ddp:
+            flag = torch.tensor(int(stop_now), device=device)
+            dist.broadcast(flag, src=0)
+            stop_now = bool(flag.item())
+
         if ddp and (should_eval or should_save):
             dist.barrier()
+        if stop_now:
+            break
 
     if master:
         code_metrics = evaluate_humaneval(raw_model, config, device)

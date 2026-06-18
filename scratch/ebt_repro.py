@@ -308,8 +308,13 @@ class EBT_NLP(nn.Module):
                 final_e = energies[-1].mean().detach()
         recon = recon / total
         gap = (init_e - final_e)
+        # energy-magnitude diagnostics (suspected exp(energy) explosion driver)
+        all_e = torch.cat([e.detach().reshape(-1) for e in energies])
+        emax = float(all_e.abs().max())
+        emean = float(all_e.abs().mean())
         return recon, dict(initial_loss=float(initial_loss), final_step_loss=float(final_loss),
-                           energy_gap=float(gap), alpha=float(self.alpha.detach()))
+                           energy_gap=float(gap), alpha=float(self.alpha.detach()),
+                           e_absmax=emax, e_absmean=emean)
 
 
 # ----------------------------------------------------------------------------

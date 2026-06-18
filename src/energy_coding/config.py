@@ -88,6 +88,8 @@ class OptimConfig:
     beta1: float = 0.9
     beta2: float = 0.95
     grad_clip: float = 1.0
+    grad_spike_mult: float = 8.0
+    grad_spike_abs: float = 0.0
     warmup_steps: int = 10_000
     warmdown_ratio: float = 0.65
     embedding_lr_scale: float = 0.5

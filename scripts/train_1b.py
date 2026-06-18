@@ -253,6 +253,19 @@ def main() -> None:
         _vocab_size = len(tokenizer)
     uniform_loss = math.log(max(_vocab_size, 2))
     collapse_streak = 0
+    # Gradient-spike guard: the real-data collapse-to-uniform is the classic
+    # signature of a rare gradient-norm spike corrupting the model after long
+    # healthy training. We track a rolling baseline of the (pre-clip) grad norm
+    # and SKIP the optimizer step entirely when the norm is anomalously large or
+    # non-finite — the single most effective defense against spike-induced
+    # divergence (used in large-LM training). Clipping alone is not enough
+    # because the clipped-but-still-huge direction can still wreck the model.
+    from collections import deque
+    grad_norm_history: deque[float] = deque(maxlen=100)
+    grad_spike_mult = float(getattr(config.optim, "grad_spike_mult", 0.0) or 8.0)
+    grad_spike_abs = float(getattr(config.optim, "grad_spike_abs", 0.0) or 0.0)
+    skipped_steps = 0
+    ended_in_collapse = False
 
     for step in range(start_step, config.train.max_steps):
         train_model.train()
@@ -281,15 +294,49 @@ def main() -> None:
             else:
                 scaled_loss.backward()
 
-        if config.optim.grad_clip > 0:
-            if scaler is not None:
-                scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(raw_model.parameters(), config.optim.grad_clip)
         if scaler is not None:
-            scaler.step(optimizer)
-            scaler.update()
+            scaler.unscale_(optimizer)
+        # clip_grad_norm_ returns the TOTAL norm BEFORE clipping — use it as the
+        # spike signal. Always clip (even if grad_clip<=0 we still measure).
+        clip_val = config.optim.grad_clip if config.optim.grad_clip > 0 else 1e9
+        total_norm = float(torch.nn.utils.clip_grad_norm_(raw_model.parameters(), clip_val))
+
+        # Decide whether this update is a spike to be skipped. Only the master
+        # decides, then broadcasts, so all ranks stay in lockstep.
+        skip_update = False
+        if not math.isfinite(total_norm):
+            skip_update = True
+        elif len(grad_norm_history) >= 30:
+            baseline = sorted(grad_norm_history)[len(grad_norm_history) // 2]  # median
+            threshold = grad_spike_mult * max(baseline, 1e-6)
+            if grad_spike_abs > 0:
+                threshold = max(threshold, grad_spike_abs)
+            if total_norm > threshold:
+                skip_update = True
+        if ddp:
+            flag = torch.tensor(int(skip_update), device=device)
+            dist.broadcast(flag, src=0)
+            skip_update = bool(flag.item())
+
+        if skip_update:
+            skipped_steps += 1
+            optimizer.zero_grad(set_to_none=True)
+            if scaler is not None:
+                scaler.update()
+            if master and skipped_steps % 5 == 1:
+                print(
+                    f"[grad-spike guard] step {step}: SKIPPED update "
+                    f"(grad_norm={total_norm:.1f}, skipped_total={skipped_steps}).",
+                    flush=True,
+                )
         else:
-            optimizer.step()
+            if math.isfinite(total_norm):
+                grad_norm_history.append(total_norm)
+            if scaler is not None:
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                optimizer.step()
 
         tokens_seen += global_tokens_per_step
         loss_value = float(loss.detach().item())
@@ -443,6 +490,7 @@ def main() -> None:
         diverging = False
         if master and collapse_streak >= 50:
             diverging = True
+            ended_in_collapse = True
             print(
                 f"Stopping: UNIFORM-VOCAB COLLAPSE detected — train_loss pinned at "
                 f"~ln(vocab)={uniform_loss:.4f} for {collapse_streak} consecutive steps. "
@@ -510,6 +558,18 @@ def main() -> None:
             asdict_nested(config),
             last_metrics,
         )
+        # Status sentinel so the pipeline can refuse to run SFT on a collapsed
+        # model (the orchestration bug that wasted a run).
+        import json as _json
+        status = {
+            "collapsed": bool(ended_in_collapse),
+            "step": int(step),
+            "tokens_seen": int(tokens_seen),
+            "best_loss_ema": float(best_loss_ema),
+            "core_metric": float(last_metrics.get("core_metric", -1.0)),
+        }
+        (out_dir / "pretrain_status.json").write_text(_json.dumps(status))
+        print(f"Pretrain status: {status}", flush=True)
     if ddp:
         dist.destroy_process_group()
     if wandb_run is not None:

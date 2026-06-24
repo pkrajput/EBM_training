@@ -1,0 +1,369 @@
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank5]:[W618 10:43:09.250231125 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 5]  using GPU 5 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank4]:[W618 10:43:10.750160311 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 4]  using GPU 4 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank1]:[W618 10:43:10.810606590 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 1]  using GPU 1 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+[rank7]:[W618 10:43:10.810632180 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 7]  using GPU 7 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+[rank6]:[W618 10:43:10.832423462 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 6]  using GPU 6 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank2]:[W618 10:43:10.124623472 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 2]  using GPU 2 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+[rank0]:[W618 10:43:10.137210271 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 0]  using GPU 0 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank3]:[W618 10:43:10.159897724 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 3]  using GPU 3 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+NCCL version 2.30.7+cuda12.9
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[34m[1mwandb[0m: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+[34m[1mwandb[0m: Currently logged in as: [33mpkrajput[0m to [32mhttps://api.wandb.ai[0m. Use [1m`wandb login --relogin`[0m to force relogin
+[34m[1mwandb[0m: [38;5;178m⢿[0m setting up run 9mun21pe (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣻[0m setting up run 9mun21pe (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣽[0m setting up run 9mun21pe (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣾[0m setting up run 9mun21pe (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣷[0m setting up run 9mun21pe (0.5s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣯[0m setting up run 9mun21pe (0.5s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣟[0m setting up run 9mun21pe (0.5s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⡿[0m setting up run 9mun21pe (0.5s)
+[Am[2K[34m[1mwandb[0m: Tracking run with wandb version 0.27.2
+[34m[1mwandb[0m: Run data is saved locally in [35m[1m/workspace/energy-coding/wandb/run-20260618_104315-9mun21pe[0m
+[34m[1mwandb[0m: Run [1m`wandb offline`[0m to turn off syncing.
+[34m[1mwandb[0m: Syncing run [33mebt-191m-sft-8xb200[0m
+[34m[1mwandb[0m: ⭐️ View project at [34m[4mhttps://wandb.ai/pkrajput/energy-coding-sft-191m[0m
+[34m[1mwandb[0m: 🚀 View run at [34m[4mhttps://wandb.ai/pkrajput/energy-coding-sft-191m/runs/9mun21pe[0m
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[SFT loader, rank 6] kept=42,942 truncated=26,185
+[SFT loader, rank 7] kept=42,941 truncated=26,095
+[SFT loader, rank 3] kept=42,942 truncated=26,124
+[SFT loader, rank 4] kept=42,942 truncated=26,160
+[SFT loader, rank 5] kept=42,942 truncated=26,140
+[SFT loader, rank 2] kept=42,942 truncated=26,176
+[SFT loader, rank 1] kept=42,942 truncated=26,506
+[SFT loader, rank 0] kept=42,942 truncated=26,181
+Loaded base checkpoint runs/ebt_191m_climbmix_8xb200/ckpt_step_7000.pt (base_step=7000, base_tokens=1,835,794,432)
+SFT tokens/step: 262,144
+sft step 000000 | loss 3.0643 | ema 3.0643
+sft step 000010 | loss 3.0612 | ema 3.1791
+sft step 000020 | loss 3.2451 | ema 3.1003
+sft step 000030 | loss 2.8041 | ema 2.9448
+sft step 000040 | loss 3.0214 | ema 2.9218
+sft step 000050 | loss 2.9741 | ema 2.9176
+sft step 000060 | loss 2.5537 | ema 2.8385
+sft step 000070 | loss 2.4553 | ema 2.7047
+sft step 000080 | loss 3.1038 | ema 2.7430
+sft step 000090 | loss 2.7020 | ema 2.6279
+sft step 000100 | loss 2.6683 | ema 2.6411
+sft step 000110 | loss 2.5110 | ema 2.7218
+sft step 000120 | loss 2.3186 | ema 2.7006
+sft step 000130 | loss 2.1183 | ema 2.4796
+sft step 000140 | loss 2.5674 | ema 2.4400
+sft step 000150 | loss 2.0459 | ema 2.3735
+sft step 000160 | loss 2.4475 | ema 2.4142
+sft step 000170 | loss 1.8716 | ema 2.2593
+sft step 000180 | loss 2.3372 | ema 2.3062
+sft step 000190 | loss 2.7202 | ema 2.3632
+sft step 000200 | loss 2.4110 | ema 2.3610
+[SFT loader, rank 4] kept=894 truncated=524
+[SFT loader, rank 0] kept=895 truncated=540
+[SFT loader, rank 2] kept=895 truncated=548
+[SFT loader, rank 7] kept=894 truncated=561
+[SFT loader, rank 1] kept=895 truncated=529
+[SFT loader, rank 5] kept=894 truncated=542
+[SFT loader, rank 6] kept=894 truncated=567
+[SFT loader, rank 3] kept=895 truncated=561
+sft eval step 200: {'step': 200, 'tokens_seen': 52690944, 'sft/val_loss': 2.1860824562609196, 'sft/val_ppl': 8.900277502079314}
+saved SFT checkpoint at step 200
+saved BEST SFT checkpoint at step 200 (ema=2.3610)
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+sft step 000210 | loss 1.3740 | ema 2.2759
+sft step 000220 | loss 2.2862 | ema 2.2915
+sft step 000230 | loss 2.5634 | ema 2.2345
+sft step 000240 | loss 2.4009 | ema 2.1937
+sft step 000250 | loss 2.2200 | ema 2.2415
+sft step 000260 | loss 2.4188 | ema 2.1924
+sft step 000270 | loss 2.5583 | ema 2.2994
+sft step 000280 | loss 2.2367 | ema 2.1784
+sft step 000290 | loss 1.6626 | ema 2.0760
+sft step 000300 | loss 2.5591 | ema 2.1600
+sft step 000310 | loss 2.1027 | ema 2.1868
+sft step 000320 | loss 2.2384 | ema 2.1649
+sft step 000330 | loss 2.1450 | ema 2.0304
+sft step 000340 | loss 1.4656 | ema 2.1287
+sft step 000350 | loss 2.1786 | ema 2.2125
+sft step 000360 | loss 1.6344 | ema 2.2464
+sft step 000370 | loss 1.7191 | ema 2.0883
+sft step 000380 | loss 2.0934 | ema 2.1641
+sft step 000390 | loss 2.3120 | ema 2.1687
+sft step 000400 | loss 1.7948 | ema 2.0596
+[SFT loader, rank 4] kept=894 truncated=524
+[SFT loader, rank 2] kept=895 truncated=548
+[SFT loader, rank 0] kept=895 truncated=540
+[SFT loader, rank 7] kept=894 truncated=561
+[SFT loader, rank 5] kept=894 truncated=542
+[SFT loader, rank 1] kept=895 truncated=529
+[SFT loader, rank 6] kept=894 truncated=567
+[SFT loader, rank 3] kept=895 truncated=561
+sft eval step 400: {'step': 400, 'tokens_seen': 105119744, 'sft/val_loss': 2.022894214838743, 'sft/val_ppl': 7.560174068337523}
+saved SFT checkpoint at step 400
+saved BEST SFT checkpoint at step 400 (ema=2.0596)
+sft step 000410 | loss 1.7481 | ema 2.0819
+sft step 000420 | loss 2.0585 | ema 2.0036
+sft step 000430 | loss 1.5483 | ema 2.1429
+sft step 000440 | loss 2.5509 | ema 2.1776
+sft step 000450 | loss 3.1973 | ema 2.2207
+sft step 000460 | loss 1.8683 | ema 2.2407
+sft step 000470 | loss 1.8942 | ema 2.1230
+sft step 000480 | loss 2.1134 | ema 2.2368
+sft step 000490 | loss 2.4198 | ema 2.2024
+sft step 000500 | loss 2.7036 | ema 2.2204
+sft step 000510 | loss 2.2981 | ema 2.2092
+sft step 000520 | loss 2.8183 | ema 2.6654
+sft step 000530 | loss 8.7914 | ema 5.4997
+sft step 000540 | loss 10.1991 | ema 7.8197
+sft step 000550 | loss 10.7746 | ema 9.6997
+sft step 000560 | loss 10.8253 | ema 10.4311
+sft step 000570 | loss 10.8253 | ema 10.6879
+sft step 000580 | loss 10.8253 | ema 10.7772
+sft step 000590 | loss 10.8253 | ema 10.8085
+sft step 000600 | loss 10.8253 | ema 10.8195
+[SFT loader, rank 2] kept=895 truncated=548
+[SFT loader, rank 4] kept=894 truncated=524
+[SFT loader, rank 0] kept=895 truncated=540
+[SFT loader, rank 7] kept=894 truncated=561
+[SFT loader, rank 5] kept=894 truncated=542
+[SFT loader, rank 1] kept=895 truncated=529
+[SFT loader, rank 6] kept=894 truncated=567
+[SFT loader, rank 3] kept=895 truncated=561
+sft eval step 600: {'step': 600, 'tokens_seen': 157548544, 'sft/val_loss': 10.825310736894608, 'sft/val_ppl': 50277.38923807806}
+saved SFT checkpoint at step 600
+Stopping SFT: UNIFORM-VOCAB COLLAPSE (~ln(vocab)=10.825) for 50 steps; best preserved in ckpt_best.pt.
+[34m[1mwandb[0m: [38;5;178m⢿[0m updating run metadata (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣻[0m updating run metadata (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣽[0m updating run metadata (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣾[0m updating run metadata (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣷[0m Finishing up...
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣯[0m Finishing up...
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣟[0m Finishing up...
+[Am[2K[34m[1mwandb[0m: [38;5;178m⡿[0m Finishing up...
+[Am[2K[34m[1mwandb[0m: [38;5;178m⢿[0m Finishing up...
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣻[0m uploading config.yaml 0B/8.6KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣻[0m uploading output.log 0B/3.9KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣻[0m uploading wandb-summary.json 0B/494B (0.0s)
+[Am[2K[Am[2K[Am[2K[34m[1mwandb[0m: [38;5;178m⣽[0m uploading config.yaml 0B/8.6KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣽[0m uploading output.log 0B/3.9KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣽[0m uploading wandb-summary.json 0B/494B (0.0s)
+[Am[2K[Am[2K[Am[2K[34m[1mwandb[0m: [38;5;178m⣾[0m uploading config.yaml 0B/8.6KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣾[0m uploading output.log 0B/3.9KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣾[0m uploading wandb-summary.json 0B/494B (0.0s)
+[Am[2K[Am[2K[Am[2K[34m[1mwandb[0m: [38;5;178m⣷[0m uploading config.yaml 0B/8.6KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣷[0m uploading output.log 0B/3.9KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣷[0m uploading wandb-summary.json 0B/494B (0.0s)
+[Am[2K[Am[2K[Am[2K[34m[1mwandb[0m: [38;5;178m⣯[0m uploading config.yaml 0B/8.6KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣯[0m uploading output.log 0B/3.9KB (0.0s)
+[34m[1mwandb[0m: [38;5;178m⣯[0m uploading wandb-summary.json 0B/494B (0.0s)
+[Am[2K[Am[2K[Am[2K[34m[1mwandb[0m: [38;5;178m⣟[0m uploading data (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⡿[0m uploading data (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⢿[0m uploading data (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣻[0m uploading data (0.0s)
+[Am[2K[34m[1mwandb[0m: [38;5;178m⣽[0m uploading data (0.0s)
+[Am[2K[34m[1mwandb[0m: 
+[34m[1mwandb[0m: Run history:
+[34m[1mwandb[0m:           humaneval_pass_at_1 ▁
+[34m[1mwandb[0m:       humaneval_pass_at_1_bon ▁
+[34m[1mwandb[0m:           humaneval_pass_at_n ▁
+[34m[1mwandb[0m:              humaneval_passed ▁
+[34m[1mwandb[0m:          humaneval_passed_bon ▁
+[34m[1mwandb[0m: humaneval_self_verify_samples ▁
+[34m[1mwandb[0m:               humaneval_total ▁
+[34m[1mwandb[0m:                        sft/lr ▁▂▃▃▄▅▅▆▆▇██████████████████████████████
+[34m[1mwandb[0m:               sft/tok_per_sec ▇█▇▇▇▇▇▇▇▇██████████▇▇▇▇▇▇▁▇▇▇▇▇▇█▇████▇
+[34m[1mwandb[0m:                sft/train_loss ▂▂▂▂▂▂▂▂▂▂▂▁▁▂▂▂▂▂▂▁▂▂▁▂▁▂▁▁▁▂▁▂▂▂▆█████
+[34m[1mwandb[0m:                            +5 ...
+[34m[1mwandb[0m: 
+[34m[1mwandb[0m: Run summary:
+[34m[1mwandb[0m:           humaneval_pass_at_1 0
+[34m[1mwandb[0m:       humaneval_pass_at_1_bon 0
+[34m[1mwandb[0m:           humaneval_pass_at_n 0
+[34m[1mwandb[0m:              humaneval_passed 0
+[34m[1mwandb[0m:          humaneval_passed_bon 0
+[34m[1mwandb[0m: humaneval_self_verify_samples 1
+[34m[1mwandb[0m:               humaneval_total 10
+[34m[1mwandb[0m:                        sft/lr 3e-05
+[34m[1mwandb[0m:               sft/tok_per_sec 58177.2977
+[34m[1mwandb[0m:                sft/train_loss 10.82531
+[34m[1mwandb[0m:                            +5 ...
+[34m[1mwandb[0m: 
+[34m[1mwandb[0m: 🚀 View run [33mebt-191m-sft-8xb200[0m at: [34m[4mhttps://wandb.ai/pkrajput/energy-coding-sft-191m/runs/9mun21pe[0m
+[34m[1mwandb[0m: ⭐️ View project at: [34m[4mhttps://wandb.ai/pkrajput/energy-coding-sft-191m[0m
+[34m[1mwandb[0m: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+[34m[1mwandb[0m: Find logs at: [35m[1m./wandb/run-20260618_104315-9mun21pe/logs[0m
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+`trust_remote_code` is not supported anymore.
+Please check that the Hugging Face dataset 'google-research-datasets/mbpp' isn't based on a loading script and remove `trust_remote_code`.
+If the dataset is based on a loading script, please ask the dataset author to remove it and convert it to a standard format like Parquet.
+`trust_remote_code` is not supported anymore.
+Please check that the Hugging Face dataset 'google-research-datasets/mbpp' isn't based on a loading script and remove `trust_remote_code`.
+If the dataset is based on a loading script, please ask the dataset author to remove it and convert it to a standard format like Parquet.
+step: 400
+tokens_seen: 105119744
+sft/val_loss: 2.022894214838743
+sft/val_ppl: 7.560174068337523
+core_metric_at_1: 0.04979185187468694
+core_metric_at_2: 0.07620272681547333
+core_metric: 0.07620272681547333
+core_thinking_gain: 0.026410874940786387
+core_raw_results/hellaswag_zeroshot: 0.3100000023841858
+core_raw_results/jeopardy: 0.0
+core_raw_results/bigbench_qa_wikidata: 0.04999999701976776
+core_raw_results/arc_easy: 0.4399999976158142
+core_raw_results/arc_challenge: 0.14999999105930328
+core_raw_results/copa: 0.41999998688697815
+core_raw_results/commonsense_qa: 0.38999998569488525
+core_raw_results/piqa: 0.5899999737739563
+core_raw_results/openbook_qa: 0.26999998092651367
+core_raw_results/lambada_openai: 0.17999999225139618
+core_raw_results/hellaswag: 0.23999999463558197
+core_raw_results/winograd: 0.5299999713897705
+core_raw_results/winogrande: 0.5799999833106995
+core_raw_results/bigbench_dyck_languages: 0.03999999910593033
+core_raw_results/agi_eval_lsat_ar: 0.1899999976158142
+core_raw_results/bigbench_cs_algorithms: 0.2800000011920929
+core_raw_results/bigbench_operators: 0.04999999701976776
+core_raw_results/bigbench_repeat_copy_logic: 0.0
+core_raw_results/squad: 0.009999999776482582
+core_raw_results/coqa: 0.03999999910593033
+core_raw_results/boolq: 0.6899999976158142
+core_raw_results/bigbench_language_identification: 0.23999999463558197
+core_centered_results/hellaswag_zeroshot: 0.08000000317891438
+core_centered_results/jeopardy: 0.0
+core_centered_results/bigbench_qa_wikidata: 0.04999999701976776
+core_centered_results/arc_easy: 0.25333333015441895
+core_centered_results/arc_challenge: -0.1333333452542623
+core_centered_results/copa: -0.1600000262260437
+core_centered_results/commonsense_qa: 0.23749998211860654
+core_centered_results/piqa: 0.1799999475479126
+core_centered_results/openbook_qa: 0.026666641235351562
+core_centered_results/lambada_openai: 0.17999999225139618
+core_centered_results/hellaswag: -0.013333340485890707
+core_centered_results/winograd: 0.059999942779541016
+core_centered_results/winogrande: 0.15999996662139893
+core_centered_results/bigbench_dyck_languages: 0.03999999910593033
+core_centered_results/agi_eval_lsat_ar: -0.012500002980232253
+core_centered_results/bigbench_cs_algorithms: 0.2800000011920929
+core_centered_results/bigbench_operators: 0.04999999701976776
+core_centered_results/bigbench_repeat_copy_logic: 0.0
+core_centered_results/squad: 0.009999999776482582
+core_centered_results/coqa: 0.03999999910593033
+core_centered_results/boolq: 0.18421052004161634
+core_centered_results/bigbench_language_identification: 0.16391638573771394
+humaneval_pass_at_1: 0.0
+humaneval_pass_at_1_bon: 0.0
+humaneval_pass_at_n: 0.0
+humaneval_passed: 0
+humaneval_passed_bon: 0
+humaneval_total: 10
+humaneval_self_verify_samples: 1
+mbpp_pass_at_1: 0.0
+mbpp_pass_at_1_bon: 0.0
+mbpp_pass_at_n: 0.0
+mbpp_passed: 0
+mbpp_passed_bon: 0
+mbpp_total: 10
+mbpp_self_verify_samples: 1
+step: 400
+tokens_seen: 105119744
+sft/val_loss: 2.022894214838743
+sft/val_ppl: 7.560174068337523
+core_metric_at_1: 0.04979185187468694
+core_metric_at_2: 0.07620272681547333
+core_metric: 0.07620272681547333
+core_thinking_gain: 0.026410874940786387
+core_raw_results/hellaswag_zeroshot: 0.3100000023841858
+core_raw_results/jeopardy: 0.0
+core_raw_results/bigbench_qa_wikidata: 0.04999999701976776
+core_raw_results/arc_easy: 0.4399999976158142
+core_raw_results/arc_challenge: 0.14999999105930328
+core_raw_results/copa: 0.41999998688697815
+core_raw_results/commonsense_qa: 0.38999998569488525
+core_raw_results/piqa: 0.5899999737739563
+core_raw_results/openbook_qa: 0.26999998092651367
+core_raw_results/lambada_openai: 0.17999999225139618
+core_raw_results/hellaswag: 0.23999999463558197
+core_raw_results/winograd: 0.5299999713897705
+core_raw_results/winogrande: 0.5799999833106995
+core_raw_results/bigbench_dyck_languages: 0.03999999910593033
+core_raw_results/agi_eval_lsat_ar: 0.1899999976158142
+core_raw_results/bigbench_cs_algorithms: 0.2800000011920929
+core_raw_results/bigbench_operators: 0.04999999701976776
+core_raw_results/bigbench_repeat_copy_logic: 0.0
+core_raw_results/squad: 0.009999999776482582
+core_raw_results/coqa: 0.03999999910593033
+core_raw_results/boolq: 0.6899999976158142
+core_raw_results/bigbench_language_identification: 0.23999999463558197
+core_centered_results/hellaswag_zeroshot: 0.08000000317891438
+core_centered_results/jeopardy: 0.0
+core_centered_results/bigbench_qa_wikidata: 0.04999999701976776
+core_centered_results/arc_easy: 0.25333333015441895
+core_centered_results/arc_challenge: -0.1333333452542623
+core_centered_results/copa: -0.1600000262260437
+core_centered_results/commonsense_qa: 0.23749998211860654
+core_centered_results/piqa: 0.1799999475479126
+core_centered_results/openbook_qa: 0.026666641235351562
+core_centered_results/lambada_openai: 0.17999999225139618
+core_centered_results/hellaswag: -0.013333340485890707
+core_centered_results/winograd: 0.059999942779541016
+core_centered_results/winogrande: 0.15999996662139893
+core_centered_results/bigbench_dyck_languages: 0.03999999910593033
+core_centered_results/agi_eval_lsat_ar: -0.012500002980232253
+core_centered_results/bigbench_cs_algorithms: 0.2800000011920929
+core_centered_results/bigbench_operators: 0.04999999701976776
+core_centered_results/bigbench_repeat_copy_logic: 0.0
+core_centered_results/squad: 0.009999999776482582
+core_centered_results/coqa: 0.03999999910593033
+core_centered_results/boolq: 0.18421052004161634
+core_centered_results/bigbench_language_identification: 0.16391638573771394
+humaneval_pass_at_1: 0.0
+humaneval_pass_at_1_bon: 0.0
+humaneval_pass_at_n: 0.0
+humaneval_passed: 0
+humaneval_passed_bon: 0
+humaneval_total: 10
+humaneval_self_verify_samples: 1
+mbpp_pass_at_1: 0.0
+mbpp_pass_at_1_bon: 0.0
+mbpp_pass_at_n: 0.0
+mbpp_passed: 0
+mbpp_passed_bon: 0
+mbpp_total: 10
+mbpp_self_verify_samples: 1

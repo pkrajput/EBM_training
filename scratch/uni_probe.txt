@@ -1,0 +1,2 @@
+spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 prateek@trux-hayabusa.uni.lux nvidia-smi -L
+Enter passphrase for key '/Users/prateek.rajput/.ssh/id_ed25519': 

@@ -1,0 +1,4 @@
+{"sft/val_loss": 2.1860824562609196, "sft/val_ppl": 8.900277502079314, "step": 200, "tokens_seen": 52690944}
+{"sft/val_loss": 2.022894214838743, "sft/val_ppl": 7.560174068337523, "step": 400, "tokens_seen": 105119744}
+{"sft/val_loss": 10.825310736894608, "sft/val_ppl": 50277.38923807806, "step": 600, "tokens_seen": 157548544}
+{"humaneval_pass_at_1": 0.0, "humaneval_pass_at_1_bon": 0.0, "humaneval_pass_at_n": 0.0, "humaneval_passed": 0, "humaneval_passed_bon": 0, "humaneval_self_verify_samples": 1, "humaneval_total": 10, "step": 3000}

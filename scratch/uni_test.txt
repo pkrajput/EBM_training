@@ -1,0 +1,5 @@
+spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-hayabusa.uni.lux echo REMOTE_OK; nvidia-smi --query-gpu=index,name,memory.used,memory.total,utilization.gpu --format=csv,noheader
+prateek@trux-hayabusa.uni.lux's password: 
+REMOTE_OK
+0, NVIDIA RTX 5000 Ada Generation, 0 MiB, 32760 MiB, 0 %
+1, NVIDIA RTX 5000 Ada Generation, 14999 MiB, 32760 MiB, 95 %

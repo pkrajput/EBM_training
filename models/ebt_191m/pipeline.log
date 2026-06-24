@@ -1,0 +1,440 @@
+
+================================================================
+[2026-06-18 09:14:29] PHASE A: PRETRAIN (191M EBT on ClimbMix, resumes from checkpoint)
+================================================================
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank7]:[W618 09:14:42.835876799 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 7]  using GPU 7 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank0]:[W618 09:14:42.137703370 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 0]  using GPU 0 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+[rank6]:[W618 09:14:42.209422630 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 6]  using GPU 6 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+NCCL version 2.30.7+cuda12.9
+[rank2]:[W618 09:14:42.446037221 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 2]  using GPU 2 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank1]:[W618 09:14:43.675970242 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 1]  using GPU 1 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank3]:[W618 09:14:43.763868683 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 3]  using GPU 3 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank4]:[W618 09:14:43.832750093 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 4]  using GPU 4 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank5]:[W618 09:14:43.879686023 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 5]  using GPU 5 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: pkrajput to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.27.2
+wandb: Run data is saved locally in /workspace/energy-coding/wandb/run-20260618_091447-oi3m1urf
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run ebt-191m-climbmix-8xb200
+wandb: ⭐️ View project at https://wandb.ai/pkrajput/energy-coding-pretrain-191m
+wandb: 🚀 View run at https://wandb.ai/pkrajput/energy-coding-pretrain-191m/runs/oi3m1urf
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Run: ebt-191m-climbmix-8xb200
+Device: cuda:0 | world_size=8
+Parameters: 191,126,631 (0.19B)
+Global tokens/step: 262,144
+Max steps: 11,445
+Target tokens: 3,000,238,080
+Precision: bf16
+MCMC train steps: 2; randomized up to 0
+Resumed from runs/ebt_191m_climbmix_8xb200/ckpt_step_7000.pt at step=7000, tokens=1,835,532,288
+step 0007000 | loss 3.2025 | ema 3.2025 | best_ema 3.2025 (+0 steps) | lr 2.40e-04 | alpha 0.250 | tok/s 415,579 | tokens 1,835,794,432
+eval step 7000: {'val_loss': 3.3504177257418633, 'val_ppl': 28.51464245645939}
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+saved checkpoint at step 7000
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+CORE eval step 7000: 0.0585
+Generating test split:   0%|          | 0/164 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 164/164 [00:00<00:00, 27684.06 examples/s]
+HumanEval step 7000: pass@1=0.0000
+`trust_remote_code` is not supported anymore.
+Please check that the Hugging Face dataset 'google-research-datasets/mbpp' isn't based on a loading script and remove `trust_remote_code`.
+If the dataset is based on a loading script, please ask the dataset author to remove it and convert it to a standard format like Parquet.
+Generating train split:   0%|          | 0/120 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 120/120 [00:00<00:00, 20177.05 examples/s]
+Generating test split:   0%|          | 0/257 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 257/257 [00:00<00:00, 67232.34 examples/s]
+Generating validation split:   0%|          | 0/43 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 43/43 [00:00<00:00, 13787.56 examples/s]
+Generating prompt split:   0%|          | 0/7 [00:00<?, ? examples/s]Generating prompt split: 100%|██████████| 7/7 [00:00<00:00, 2334.80 examples/s]
+MBPP step 7000: pass@1=0.0000 bon=0.0000
+/workspace/energy-coding/.venv/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+step 0007010 | loss 3.3373 | ema 3.3151 | best_ema 3.1846 (+9 steps) | lr 2.39e-04 | alpha 0.250 | tok/s 4,164 | tokens 1,838,415,872
+step 0007020 | loss 3.5075 | ema 3.3497 | best_ema 3.1846 (+19 steps) | lr 2.39e-04 | alpha 0.250 | tok/s 73,540 | tokens 1,841,037,312
+step 0007030 | loss 3.2819 | ema 3.3008 | best_ema 3.1846 (+29 steps) | lr 2.38e-04 | alpha 0.250 | tok/s 72,952 | tokens 1,843,658,752
+step 0007040 | loss 3.0799 | ema 3.2912 | best_ema 3.1654 (+7 steps) | lr 2.38e-04 | alpha 0.250 | tok/s 73,283 | tokens 1,846,280,192
+step 0007050 | loss 3.9352 | ema 3.4261 | best_ema 3.1654 (+17 steps) | lr 2.37e-04 | alpha 0.250 | tok/s 73,035 | tokens 1,848,901,632
+step 0007060 | loss 3.6488 | ema 3.3673 | best_ema 3.1654 (+27 steps) | lr 2.37e-04 | alpha 0.250 | tok/s 73,145 | tokens 1,851,523,072
+step 0007070 | loss 3.6090 | ema 3.3944 | best_ema 3.1654 (+37 steps) | lr 2.36e-04 | alpha 0.250 | tok/s 73,475 | tokens 1,854,144,512
+step 0007080 | loss 3.5695 | ema 3.4602 | best_ema 3.1654 (+47 steps) | lr 2.36e-04 | alpha 0.250 | tok/s 72,979 | tokens 1,856,765,952
+step 0007090 | loss 3.6258 | ema 3.4358 | best_ema 3.1654 (+57 steps) | lr 2.35e-04 | alpha 0.250 | tok/s 73,138 | tokens 1,859,387,392
+step 0007100 | loss 3.3096 | ema 3.4236 | best_ema 3.1654 (+67 steps) | lr 2.35e-04 | alpha 0.250 | tok/s 72,382 | tokens 1,862,008,832
+step 0007110 | loss 3.4668 | ema 3.3822 | best_ema 3.1654 (+77 steps) | lr 2.35e-04 | alpha 0.250 | tok/s 73,137 | tokens 1,864,630,272
+step 0007120 | loss 2.6333 | ema 3.3197 | best_ema 3.1654 (+87 steps) | lr 2.34e-04 | alpha 0.250 | tok/s 73,160 | tokens 1,867,251,712
+step 0007130 | loss 3.4610 | ema 3.5057 | best_ema 3.1654 (+97 steps) | lr 2.34e-04 | alpha 0.250 | tok/s 73,320 | tokens 1,869,873,152
+step 0007140 | loss 3.4339 | ema 3.5346 | best_ema 3.1654 (+107 steps) | lr 2.33e-04 | alpha 0.250 | tok/s 72,710 | tokens 1,872,494,592
+step 0007150 | loss 3.4645 | ema 3.4497 | best_ema 3.1654 (+117 steps) | lr 2.33e-04 | alpha 0.250 | tok/s 73,130 | tokens 1,875,116,032
+step 0007160 | loss 3.6864 | ema 3.5006 | best_ema 3.1654 (+127 steps) | lr 2.32e-04 | alpha 0.250 | tok/s 73,157 | tokens 1,877,737,472
+step 0007170 | loss 3.6695 | ema 3.4806 | best_ema 3.1654 (+137 steps) | lr 2.32e-04 | alpha 0.250 | tok/s 72,655 | tokens 1,880,358,912
+step 0007180 | loss 3.4126 | ema 3.4028 | best_ema 3.1654 (+147 steps) | lr 2.31e-04 | alpha 0.250 | tok/s 73,414 | tokens 1,882,980,352
+step 0007190 | loss 3.2904 | ema 3.4541 | best_ema 3.1654 (+157 steps) | lr 2.31e-04 | alpha 0.250 | tok/s 72,868 | tokens 1,885,601,792
+step 0007200 | loss 4.1964 | ema 3.5847 | best_ema 3.1654 (+167 steps) | lr 2.30e-04 | alpha 0.250 | tok/s 73,048 | tokens 1,888,223,232
+eval step 7200: {'val_loss': 3.3208041712641716, 'val_ppl': 27.682603163846487}
+step 0007210 | loss 3.2851 | ema 3.4923 | best_ema 3.1654 (+177 steps) | lr 2.30e-04 | alpha 0.250 | tok/s 62,974 | tokens 1,890,844,672
+step 0007220 | loss 3.6292 | ema 3.5346 | best_ema 3.1654 (+187 steps) | lr 2.29e-04 | alpha 0.250 | tok/s 72,548 | tokens 1,893,466,112
+[grad-spike guard] step 7227: SKIPPED update (grad_norm=10.8, skipped_total=1).
+step 0007230 | loss 3.8501 | ema 3.4785 | best_ema 3.1654 (+197 steps) | lr 2.29e-04 | alpha 0.250 | tok/s 72,805 | tokens 1,896,087,552
+[grad-spike guard] step 7232: SKIPPED update (grad_norm=11.6, skipped_total=6).
+[grad-spike guard] step 7237: SKIPPED update (grad_norm=11.8, skipped_total=11).
+step 0007240 | loss 3.4774 | ema 3.5075 | best_ema 3.1654 (+207 steps) | lr 2.28e-04 | alpha 0.250 | tok/s 72,279 | tokens 1,898,708,992
+[grad-spike guard] step 7242: SKIPPED update (grad_norm=10.9, skipped_total=16).
+[grad-spike guard] step 7247: SKIPPED update (grad_norm=11.5, skipped_total=21).
+step 0007250 | loss 4.0687 | ema 3.4662 | best_ema 3.1654 (+217 steps) | lr 2.28e-04 | alpha 0.250 | tok/s 72,797 | tokens 1,901,330,432
+saved checkpoint at step 7250
+[grad-spike guard] step 7252: SKIPPED update (grad_norm=11.5, skipped_total=26).
+[grad-spike guard] step 7257: SKIPPED update (grad_norm=11.3, skipped_total=31).
+step 0007260 | loss 3.3996 | ema 3.4858 | best_ema 3.1654 (+227 steps) | lr 2.27e-04 | alpha 0.250 | tok/s 68,141 | tokens 1,903,951,872
+[grad-spike guard] step 7262: SKIPPED update (grad_norm=11.1, skipped_total=36).
+[grad-spike guard] step 7267: SKIPPED update (grad_norm=11.5, skipped_total=41).
+step 0007270 | loss 3.7629 | ema 3.4542 | best_ema 3.1654 (+237 steps) | lr 2.27e-04 | alpha 0.250 | tok/s 73,039 | tokens 1,906,573,312
+[grad-spike guard] step 7272: SKIPPED update (grad_norm=11.0, skipped_total=46).
+[grad-spike guard] step 7277: SKIPPED update (grad_norm=11.3, skipped_total=51).
+step 0007280 | loss 3.3449 | ema 3.4819 | best_ema 3.1654 (+247 steps) | lr 2.27e-04 | alpha 0.250 | tok/s 72,836 | tokens 1,909,194,752
+[grad-spike guard] step 7282: SKIPPED update (grad_norm=11.6, skipped_total=56).
+[grad-spike guard] step 7287: SKIPPED update (grad_norm=11.3, skipped_total=61).
+step 0007290 | loss 4.1412 | ema 3.5421 | best_ema 3.1654 (+257 steps) | lr 2.26e-04 | alpha 0.250 | tok/s 72,803 | tokens 1,911,816,192
+[grad-spike guard] step 7292: SKIPPED update (grad_norm=11.1, skipped_total=66).
+[grad-spike guard] step 7297: SKIPPED update (grad_norm=11.3, skipped_total=71).
+step 0007300 | loss 4.3187 | ema 3.5452 | best_ema 3.1654 (+267 steps) | lr 2.26e-04 | alpha 0.250 | tok/s 72,766 | tokens 1,914,437,632
+[grad-spike guard] step 7302: SKIPPED update (grad_norm=10.9, skipped_total=76).
+[grad-spike guard] step 7307: SKIPPED update (grad_norm=12.2, skipped_total=81).
+step 0007310 | loss 3.3099 | ema 3.6154 | best_ema 3.1654 (+277 steps) | lr 2.25e-04 | alpha 0.250 | tok/s 72,880 | tokens 1,917,059,072
+[grad-spike guard] step 7312: SKIPPED update (grad_norm=10.9, skipped_total=86).
+[grad-spike guard] step 7317: SKIPPED update (grad_norm=11.1, skipped_total=91).
+step 0007320 | loss 2.9751 | ema 3.4426 | best_ema 3.1654 (+287 steps) | lr 2.25e-04 | alpha 0.250 | tok/s 72,816 | tokens 1,919,680,512
+[grad-spike guard] step 7322: SKIPPED update (grad_norm=11.0, skipped_total=96).
+[grad-spike guard] step 7327: SKIPPED update (grad_norm=11.7, skipped_total=101).
+step 0007330 | loss 3.4593 | ema 3.4798 | best_ema 3.1654 (+297 steps) | lr 2.24e-04 | alpha 0.250 | tok/s 73,020 | tokens 1,922,301,952
+[grad-spike guard] step 7332: SKIPPED update (grad_norm=11.5, skipped_total=106).
+[grad-spike guard] step 7337: SKIPPED update (grad_norm=11.6, skipped_total=111).
+step 0007340 | loss 3.0144 | ema 3.4687 | best_ema 3.1654 (+307 steps) | lr 2.24e-04 | alpha 0.250 | tok/s 72,821 | tokens 1,924,923,392
+[grad-spike guard] step 7342: SKIPPED update (grad_norm=11.3, skipped_total=116).
+[grad-spike guard] step 7347: SKIPPED update (grad_norm=11.0, skipped_total=121).
+step 0007350 | loss 3.7962 | ema 3.4713 | best_ema 3.1654 (+317 steps) | lr 2.23e-04 | alpha 0.250 | tok/s 72,909 | tokens 1,927,544,832
+[grad-spike guard] step 7352: SKIPPED update (grad_norm=11.1, skipped_total=126).
+[grad-spike guard] step 7357: SKIPPED update (grad_norm=11.1, skipped_total=131).
+step 0007360 | loss 3.7213 | ema 3.4918 | best_ema 3.1654 (+327 steps) | lr 2.23e-04 | alpha 0.250 | tok/s 72,904 | tokens 1,930,166,272
+[grad-spike guard] step 7362: SKIPPED update (grad_norm=11.2, skipped_total=136).
+[grad-spike guard] step 7367: SKIPPED update (grad_norm=11.8, skipped_total=141).
+step 0007370 | loss 3.3782 | ema 3.4986 | best_ema 3.1654 (+337 steps) | lr 2.22e-04 | alpha 0.250 | tok/s 72,735 | tokens 1,932,787,712
+[grad-spike guard] step 7372: SKIPPED update (grad_norm=11.5, skipped_total=146).
+[grad-spike guard] step 7377: SKIPPED update (grad_norm=11.0, skipped_total=151).
+step 0007380 | loss 3.6316 | ema 3.4465 | best_ema 3.1654 (+347 steps) | lr 2.22e-04 | alpha 0.250 | tok/s 73,019 | tokens 1,935,409,152
+[grad-spike guard] step 7382: SKIPPED update (grad_norm=10.8, skipped_total=156).
+[grad-spike guard] step 7387: SKIPPED update (grad_norm=11.3, skipped_total=161).
+step 0007390 | loss 3.3712 | ema 3.4824 | best_ema 3.1654 (+357 steps) | lr 2.21e-04 | alpha 0.250 | tok/s 73,253 | tokens 1,938,030,592
+[grad-spike guard] step 7392: SKIPPED update (grad_norm=12.3, skipped_total=166).
+[grad-spike guard] step 7397: SKIPPED update (grad_norm=10.8, skipped_total=171).
+step 0007400 | loss 3.4974 | ema 3.4942 | best_ema 3.1654 (+367 steps) | lr 2.21e-04 | alpha 0.250 | tok/s 73,273 | tokens 1,940,652,032
+eval step 7400: {'val_loss': 3.404602460563183, 'val_ppl': 30.10232648303581}
+[grad-spike guard] step 7402: SKIPPED update (grad_norm=12.7, skipped_total=176).
+[grad-spike guard] step 7407: SKIPPED update (grad_norm=10.7, skipped_total=181).
+step 0007410 | loss 3.4275 | ema 3.4494 | best_ema 3.1654 (+377 steps) | lr 2.20e-04 | alpha 0.250 | tok/s 62,653 | tokens 1,943,273,472
+[grad-spike guard] step 7412: SKIPPED update (grad_norm=11.0, skipped_total=186).
+[grad-spike guard] step 7417: SKIPPED update (grad_norm=11.4, skipped_total=191).
+step 0007420 | loss 3.1580 | ema 3.5104 | best_ema 3.1654 (+387 steps) | lr 2.20e-04 | alpha 0.250 | tok/s 73,669 | tokens 1,945,894,912
+[grad-spike guard] step 7422: SKIPPED update (grad_norm=11.6, skipped_total=196).
+[grad-spike guard] step 7427: SKIPPED update (grad_norm=10.3, skipped_total=201).
+step 0007430 | loss 3.7538 | ema 3.5143 | best_ema 3.1654 (+397 steps) | lr 2.19e-04 | alpha 0.250 | tok/s 73,718 | tokens 1,948,516,352
+[grad-spike guard] step 7432: SKIPPED update (grad_norm=10.9, skipped_total=206).
+[grad-spike guard] step 7437: SKIPPED update (grad_norm=10.8, skipped_total=211).
+step 0007440 | loss 4.6790 | ema 3.7002 | best_ema 3.1654 (+407 steps) | lr 2.19e-04 | alpha 0.250 | tok/s 73,453 | tokens 1,951,137,792
+[grad-spike guard] step 7442: SKIPPED update (grad_norm=10.1, skipped_total=216).
+[grad-spike guard] step 7447: SKIPPED update (grad_norm=11.6, skipped_total=221).
+step 0007450 | loss 3.7852 | ema 3.5734 | best_ema 3.1654 (+417 steps) | lr 2.19e-04 | alpha 0.250 | tok/s 73,536 | tokens 1,953,759,232
+[grad-spike guard] step 7452: SKIPPED update (grad_norm=11.2, skipped_total=226).
+[grad-spike guard] step 7457: SKIPPED update (grad_norm=10.9, skipped_total=231).
+step 0007460 | loss 3.5455 | ema 3.4509 | best_ema 3.1654 (+427 steps) | lr 2.18e-04 | alpha 0.250 | tok/s 73,541 | tokens 1,956,380,672
+[grad-spike guard] step 7462: SKIPPED update (grad_norm=11.5, skipped_total=236).
+[grad-spike guard] step 7467: SKIPPED update (grad_norm=11.6, skipped_total=241).
+step 0007470 | loss 3.7854 | ema 3.4881 | best_ema 3.1654 (+437 steps) | lr 2.18e-04 | alpha 0.250 | tok/s 73,789 | tokens 1,959,002,112
+[grad-spike guard] step 7472: SKIPPED update (grad_norm=12.0, skipped_total=246).
+[grad-spike guard] step 7477: SKIPPED update (grad_norm=11.7, skipped_total=251).
+step 0007480 | loss 3.5102 | ema 3.5612 | best_ema 3.1654 (+447 steps) | lr 2.17e-04 | alpha 0.250 | tok/s 73,407 | tokens 1,961,623,552
+[grad-spike guard] step 7482: SKIPPED update (grad_norm=12.3, skipped_total=256).
+[grad-spike guard] step 7487: SKIPPED update (grad_norm=11.2, skipped_total=261).
+step 0007490 | loss 3.2877 | ema 3.6334 | best_ema 3.1654 (+457 steps) | lr 2.17e-04 | alpha 0.250 | tok/s 73,618 | tokens 1,964,244,992
+[grad-spike guard] step 7492: SKIPPED update (grad_norm=11.4, skipped_total=266).
+[grad-spike guard] step 7497: SKIPPED update (grad_norm=11.1, skipped_total=271).
+step 0007500 | loss 3.9307 | ema 3.6499 | best_ema 3.1654 (+467 steps) | lr 2.16e-04 | alpha 0.250 | tok/s 73,596 | tokens 1,966,866,432
+saved checkpoint at step 7500
+CORE eval step 7500: 0.0537
+[grad-spike guard] step 7502: SKIPPED update (grad_norm=11.6, skipped_total=276).
+[grad-spike guard] step 7507: SKIPPED update (grad_norm=11.7, skipped_total=281).
+step 0007510 | loss 3.5882 | ema 3.5547 | best_ema 3.1654 (+477 steps) | lr 2.16e-04 | alpha 0.250 | tok/s 28,722 | tokens 1,969,487,872
+[grad-spike guard] step 7512: SKIPPED update (grad_norm=10.9, skipped_total=286).
+[grad-spike guard] step 7517: SKIPPED update (grad_norm=11.4, skipped_total=291).
+step 0007520 | loss 3.7205 | ema 3.5291 | best_ema 3.1654 (+487 steps) | lr 2.15e-04 | alpha 0.250 | tok/s 73,484 | tokens 1,972,109,312
+[grad-spike guard] step 7522: SKIPPED update (grad_norm=11.9, skipped_total=296).
+[grad-spike guard] step 7527: SKIPPED update (grad_norm=11.3, skipped_total=301).
+step 0007530 | loss 3.6695 | ema 3.5268 | best_ema 3.1654 (+497 steps) | lr 2.15e-04 | alpha 0.250 | tok/s 73,373 | tokens 1,974,730,752
+[grad-spike guard] step 7532: SKIPPED update (grad_norm=10.7, skipped_total=306).
+[grad-spike guard] step 7537: SKIPPED update (grad_norm=11.6, skipped_total=311).
+step 0007540 | loss 3.4091 | ema 3.4067 | best_ema 3.1654 (+507 steps) | lr 2.14e-04 | alpha 0.250 | tok/s 73,201 | tokens 1,977,352,192
+[grad-spike guard] step 7542: SKIPPED update (grad_norm=10.8, skipped_total=316).
+[grad-spike guard] step 7547: SKIPPED update (grad_norm=10.8, skipped_total=321).
+step 0007550 | loss 3.5585 | ema 3.5109 | best_ema 3.1654 (+517 steps) | lr 2.14e-04 | alpha 0.250 | tok/s 73,372 | tokens 1,979,973,632
+[grad-spike guard] step 7552: SKIPPED update (grad_norm=10.1, skipped_total=326).
+[grad-spike guard] step 7557: SKIPPED update (grad_norm=10.8, skipped_total=331).
+step 0007560 | loss 3.5672 | ema 3.4844 | best_ema 3.1654 (+527 steps) | lr 2.13e-04 | alpha 0.250 | tok/s 72,916 | tokens 1,982,595,072
+[grad-spike guard] step 7562: SKIPPED update (grad_norm=10.7, skipped_total=336).
+[grad-spike guard] step 7567: SKIPPED update (grad_norm=12.2, skipped_total=341).
+step 0007570 | loss 5.1094 | ema 3.6749 | best_ema 3.1654 (+537 steps) | lr 2.13e-04 | alpha 0.250 | tok/s 73,273 | tokens 1,985,216,512
+[grad-spike guard] step 7572: SKIPPED update (grad_norm=10.6, skipped_total=346).
+[grad-spike guard] step 7577: SKIPPED update (grad_norm=12.0, skipped_total=351).
+step 0007580 | loss 3.1812 | ema 3.5896 | best_ema 3.1654 (+547 steps) | lr 2.12e-04 | alpha 0.250 | tok/s 73,319 | tokens 1,987,837,952
+[grad-spike guard] step 7582: SKIPPED update (grad_norm=11.2, skipped_total=356).
+[grad-spike guard] step 7587: SKIPPED update (grad_norm=11.0, skipped_total=361).
+step 0007590 | loss 3.3153 | ema 3.4542 | best_ema 3.1654 (+557 steps) | lr 2.12e-04 | alpha 0.250 | tok/s 73,429 | tokens 1,990,459,392
+[grad-spike guard] step 7592: SKIPPED update (grad_norm=11.1, skipped_total=366).
+[grad-spike guard] step 7597: SKIPPED update (grad_norm=11.6, skipped_total=371).
+step 0007600 | loss 3.4853 | ema 3.4715 | best_ema 3.1654 (+567 steps) | lr 2.11e-04 | alpha 0.250 | tok/s 72,853 | tokens 1,993,080,832
+eval step 7600: {'val_loss': 3.4042056053876877, 'val_ppl': 30.090382589131387}
+[grad-spike guard] step 7602: SKIPPED update (grad_norm=11.5, skipped_total=376).
+[grad-spike guard] step 7607: SKIPPED update (grad_norm=10.9, skipped_total=381).
+step 0007610 | loss 3.4773 | ema 3.5030 | best_ema 3.1654 (+577 steps) | lr 2.11e-04 | alpha 0.250 | tok/s 63,275 | tokens 1,995,702,272
+[grad-spike guard] step 7612: SKIPPED update (grad_norm=10.6, skipped_total=386).
+[grad-spike guard] step 7617: SKIPPED update (grad_norm=11.2, skipped_total=391).
+step 0007620 | loss 4.0321 | ema 3.5166 | best_ema 3.1654 (+587 steps) | lr 2.10e-04 | alpha 0.250 | tok/s 73,124 | tokens 1,998,323,712
+[grad-spike guard] step 7622: SKIPPED update (grad_norm=11.1, skipped_total=396).
+[grad-spike guard] step 7627: SKIPPED update (grad_norm=10.5, skipped_total=401).
+step 0007630 | loss 3.2495 | ema 3.4350 | best_ema 3.1654 (+597 steps) | lr 2.10e-04 | alpha 0.250 | tok/s 73,486 | tokens 2,000,945,152
+[grad-spike guard] step 7632: SKIPPED update (grad_norm=11.4, skipped_total=406).
+[grad-spike guard] step 7637: SKIPPED update (grad_norm=11.2, skipped_total=411).
+step 0007640 | loss 3.9596 | ema 3.6313 | best_ema 3.1654 (+607 steps) | lr 2.10e-04 | alpha 0.250 | tok/s 73,429 | tokens 2,003,566,592
+[grad-spike guard] step 7642: SKIPPED update (grad_norm=11.1, skipped_total=416).
+[grad-spike guard] step 7647: SKIPPED update (grad_norm=10.9, skipped_total=421).
+step 0007650 | loss 4.0054 | ema 3.6503 | best_ema 3.1654 (+617 steps) | lr 2.09e-04 | alpha 0.250 | tok/s 73,115 | tokens 2,006,188,032
+[grad-spike guard] step 7652: SKIPPED update (grad_norm=11.0, skipped_total=426).
+[grad-spike guard] step 7657: SKIPPED update (grad_norm=11.1, skipped_total=431).
+step 0007660 | loss 3.2498 | ema 3.5585 | best_ema 3.1654 (+627 steps) | lr 2.09e-04 | alpha 0.250 | tok/s 73,067 | tokens 2,008,809,472
+[grad-spike guard] step 7662: SKIPPED update (grad_norm=11.0, skipped_total=436).
+[grad-spike guard] step 7667: SKIPPED update (grad_norm=11.4, skipped_total=441).
+step 0007670 | loss 3.6054 | ema 3.5581 | best_ema 3.1654 (+637 steps) | lr 2.08e-04 | alpha 0.250 | tok/s 73,455 | tokens 2,011,430,912
+[grad-spike guard] step 7672: SKIPPED update (grad_norm=11.9, skipped_total=446).
+[grad-spike guard] step 7677: SKIPPED update (grad_norm=11.6, skipped_total=451).
+step 0007680 | loss 2.7236 | ema 3.3347 | best_ema 3.1654 (+647 steps) | lr 2.08e-04 | alpha 0.250 | tok/s 73,399 | tokens 2,014,052,352
+[grad-spike guard] step 7682: SKIPPED update (grad_norm=12.1, skipped_total=456).
+[grad-spike guard] step 7687: SKIPPED update (grad_norm=11.8, skipped_total=461).
+step 0007690 | loss 3.4781 | ema 3.4830 | best_ema 3.1654 (+657 steps) | lr 2.07e-04 | alpha 0.250 | tok/s 73,288 | tokens 2,016,673,792
+[grad-spike guard] step 7692: SKIPPED update (grad_norm=11.9, skipped_total=466).
+[grad-spike guard] step 7697: SKIPPED update (grad_norm=11.0, skipped_total=471).
+step 0007700 | loss 3.7168 | ema 3.4984 | best_ema 3.1654 (+667 steps) | lr 2.07e-04 | alpha 0.250 | tok/s 73,041 | tokens 2,019,295,232
+[grad-spike guard] step 7702: SKIPPED update (grad_norm=11.2, skipped_total=476).
+[grad-spike guard] step 7707: SKIPPED update (grad_norm=11.3, skipped_total=481).
+step 0007710 | loss 3.2801 | ema 3.4628 | best_ema 3.1654 (+677 steps) | lr 2.06e-04 | alpha 0.250 | tok/s 73,374 | tokens 2,021,916,672
+[grad-spike guard] step 7712: SKIPPED update (grad_norm=11.5, skipped_total=486).
+[grad-spike guard] step 7717: SKIPPED update (grad_norm=11.3, skipped_total=491).
+step 0007720 | loss 2.8545 | ema 3.4756 | best_ema 3.1654 (+687 steps) | lr 2.06e-04 | alpha 0.250 | tok/s 73,434 | tokens 2,024,538,112
+[grad-spike guard] step 7722: SKIPPED update (grad_norm=12.0, skipped_total=496).
+[grad-spike guard] step 7727: SKIPPED update (grad_norm=11.5, skipped_total=501).
+step 0007730 | loss 3.4018 | ema 3.3434 | best_ema 3.1654 (+697 steps) | lr 2.05e-04 | alpha 0.250 | tok/s 72,846 | tokens 2,027,159,552
+[grad-spike guard] step 7732: SKIPPED update (grad_norm=12.2, skipped_total=506).
+[grad-spike guard] step 7737: SKIPPED update (grad_norm=11.1, skipped_total=511).
+step 0007740 | loss 3.0756 | ema 3.3943 | best_ema 3.1654 (+707 steps) | lr 2.05e-04 | alpha 0.250 | tok/s 72,831 | tokens 2,029,780,992
+[grad-spike guard] step 7742: SKIPPED update (grad_norm=11.1, skipped_total=516).
+[grad-spike guard] step 7747: SKIPPED update (grad_norm=11.0, skipped_total=521).
+step 0007750 | loss 3.3268 | ema 3.4591 | best_ema 3.1654 (+717 steps) | lr 2.04e-04 | alpha 0.250 | tok/s 72,681 | tokens 2,032,402,432
+saved checkpoint at step 7750
+[grad-spike guard] step 7752: SKIPPED update (grad_norm=11.5, skipped_total=526).
+[grad-spike guard] step 7757: SKIPPED update (grad_norm=12.1, skipped_total=531).
+step 0007760 | loss 3.6445 | ema 3.6128 | best_ema 3.1654 (+727 steps) | lr 2.04e-04 | alpha 0.250 | tok/s 68,300 | tokens 2,035,023,872
+[grad-spike guard] step 7762: SKIPPED update (grad_norm=11.7, skipped_total=536).
+[grad-spike guard] step 7767: SKIPPED update (grad_norm=11.4, skipped_total=541).
+step 0007770 | loss 3.5621 | ema 3.4586 | best_ema 3.1654 (+737 steps) | lr 2.03e-04 | alpha 0.250 | tok/s 73,029 | tokens 2,037,645,312
+[grad-spike guard] step 7772: SKIPPED update (grad_norm=11.7, skipped_total=546).
+[grad-spike guard] step 7777: SKIPPED update (grad_norm=11.3, skipped_total=551).
+step 0007780 | loss 3.5100 | ema 3.4270 | best_ema 3.1654 (+747 steps) | lr 2.03e-04 | alpha 0.250 | tok/s 72,767 | tokens 2,040,266,752
+[grad-spike guard] step 7782: SKIPPED update (grad_norm=11.6, skipped_total=556).
+[grad-spike guard] step 7787: SKIPPED update (grad_norm=11.1, skipped_total=561).
+step 0007790 | loss 3.6116 | ema 3.4373 | best_ema 3.1654 (+757 steps) | lr 2.02e-04 | alpha 0.250 | tok/s 72,967 | tokens 2,042,888,192
+[grad-spike guard] step 7792: SKIPPED update (grad_norm=11.9, skipped_total=566).
+[grad-spike guard] step 7797: SKIPPED update (grad_norm=11.1, skipped_total=571).
+step 0007800 | loss 3.4390 | ema 3.5783 | best_ema 3.1654 (+767 steps) | lr 2.02e-04 | alpha 0.250 | tok/s 72,727 | tokens 2,045,509,632
+eval step 7800: {'val_loss': 3.4040247201919556, 'val_ppl': 30.084940176627864}
+[grad-spike guard] step 7802: SKIPPED update (grad_norm=11.5, skipped_total=576).
+[grad-spike guard] step 7807: SKIPPED update (grad_norm=11.5, skipped_total=581).
+step 0007810 | loss 3.8590 | ema 3.6552 | best_ema 3.1654 (+777 steps) | lr 2.02e-04 | alpha 0.250 | tok/s 63,144 | tokens 2,048,131,072
+[grad-spike guard] step 7812: SKIPPED update (grad_norm=10.9, skipped_total=586).
+[grad-spike guard] step 7817: SKIPPED update (grad_norm=11.2, skipped_total=591).
+step 0007820 | loss 3.4230 | ema 3.5132 | best_ema 3.1654 (+787 steps) | lr 2.01e-04 | alpha 0.250 | tok/s 73,810 | tokens 2,050,752,512
+[grad-spike guard] step 7822: SKIPPED update (grad_norm=11.3, skipped_total=596).
+[grad-spike guard] step 7827: SKIPPED update (grad_norm=10.8, skipped_total=601).
+step 0007830 | loss 3.5757 | ema 3.6206 | best_ema 3.1654 (+797 steps) | lr 2.01e-04 | alpha 0.250 | tok/s 73,200 | tokens 2,053,373,952
+[grad-spike guard] step 7832: SKIPPED update (grad_norm=11.1, skipped_total=606).
+[grad-spike guard] step 7837: SKIPPED update (grad_norm=11.6, skipped_total=611).
+step 0007840 | loss 3.1364 | ema 3.5644 | best_ema 3.1654 (+807 steps) | lr 2.00e-04 | alpha 0.250 | tok/s 73,409 | tokens 2,055,995,392
+[grad-spike guard] step 7842: SKIPPED update (grad_norm=12.1, skipped_total=616).
+[grad-spike guard] step 7847: SKIPPED update (grad_norm=11.4, skipped_total=621).
+step 0007850 | loss 3.6001 | ema 3.5915 | best_ema 3.1654 (+817 steps) | lr 2.00e-04 | alpha 0.250 | tok/s 73,301 | tokens 2,058,616,832
+[grad-spike guard] step 7852: SKIPPED update (grad_norm=11.7, skipped_total=626).
+[grad-spike guard] step 7857: SKIPPED update (grad_norm=11.4, skipped_total=631).
+step 0007860 | loss 3.0676 | ema 3.5668 | best_ema 3.1654 (+827 steps) | lr 1.99e-04 | alpha 0.250 | tok/s 73,461 | tokens 2,061,238,272
+[grad-spike guard] step 7862: SKIPPED update (grad_norm=10.9, skipped_total=636).
+[grad-spike guard] step 7867: SKIPPED update (grad_norm=11.1, skipped_total=641).
+step 0007870 | loss 3.4493 | ema 3.5950 | best_ema 3.1654 (+837 steps) | lr 1.99e-04 | alpha 0.250 | tok/s 73,196 | tokens 2,063,859,712
+[grad-spike guard] step 7872: SKIPPED update (grad_norm=11.6, skipped_total=646).
+[grad-spike guard] step 7877: SKIPPED update (grad_norm=11.8, skipped_total=651).
+step 0007880 | loss 3.4088 | ema 3.5378 | best_ema 3.1654 (+847 steps) | lr 1.98e-04 | alpha 0.250 | tok/s 73,568 | tokens 2,066,481,152
+[grad-spike guard] step 7882: SKIPPED update (grad_norm=11.1, skipped_total=656).
+[grad-spike guard] step 7887: SKIPPED update (grad_norm=11.7, skipped_total=661).
+step 0007890 | loss 3.2750 | ema 3.5571 | best_ema 3.1654 (+857 steps) | lr 1.98e-04 | alpha 0.250 | tok/s 73,720 | tokens 2,069,102,592
+[grad-spike guard] step 7892: SKIPPED update (grad_norm=10.6, skipped_total=666).
+[grad-spike guard] step 7897: SKIPPED update (grad_norm=10.9, skipped_total=671).
+step 0007900 | loss 2.9961 | ema 3.4758 | best_ema 3.1654 (+867 steps) | lr 1.97e-04 | alpha 0.250 | tok/s 72,799 | tokens 2,071,724,032
+[grad-spike guard] step 7902: SKIPPED update (grad_norm=12.2, skipped_total=676).
+[grad-spike guard] step 7907: SKIPPED update (grad_norm=11.0, skipped_total=681).
+step 0007910 | loss 3.4678 | ema 3.4566 | best_ema 3.1654 (+877 steps) | lr 1.97e-04 | alpha 0.250 | tok/s 73,508 | tokens 2,074,345,472
+[grad-spike guard] step 7912: SKIPPED update (grad_norm=11.8, skipped_total=686).
+[grad-spike guard] step 7917: SKIPPED update (grad_norm=11.9, skipped_total=691).
+step 0007920 | loss 3.2635 | ema 3.2989 | best_ema 3.1654 (+887 steps) | lr 1.96e-04 | alpha 0.250 | tok/s 73,406 | tokens 2,076,966,912
+[grad-spike guard] step 7922: SKIPPED update (grad_norm=11.6, skipped_total=696).
+[grad-spike guard] step 7927: SKIPPED update (grad_norm=11.4, skipped_total=701).
+step 0007930 | loss 3.7210 | ema 3.4999 | best_ema 3.1654 (+897 steps) | lr 1.96e-04 | alpha 0.250 | tok/s 72,762 | tokens 2,079,588,352
+[grad-spike guard] step 7932: SKIPPED update (grad_norm=12.4, skipped_total=706).
+[grad-spike guard] step 7937: SKIPPED update (grad_norm=12.0, skipped_total=711).
+step 0007940 | loss 3.6116 | ema 3.5548 | best_ema 3.1654 (+907 steps) | lr 1.95e-04 | alpha 0.250 | tok/s 72,678 | tokens 2,082,209,792
+[grad-spike guard] step 7942: SKIPPED update (grad_norm=12.2, skipped_total=716).
+[grad-spike guard] step 7947: SKIPPED update (grad_norm=11.2, skipped_total=721).
+step 0007950 | loss 3.4426 | ema 3.5228 | best_ema 3.1654 (+917 steps) | lr 1.95e-04 | alpha 0.250 | tok/s 72,405 | tokens 2,084,831,232
+[grad-spike guard] step 7952: SKIPPED update (grad_norm=11.4, skipped_total=726).
+[grad-spike guard] step 7957: SKIPPED update (grad_norm=12.0, skipped_total=731).
+step 0007960 | loss 3.3665 | ema 3.5493 | best_ema 3.1654 (+927 steps) | lr 1.94e-04 | alpha 0.250 | tok/s 72,684 | tokens 2,087,452,672
+[grad-spike guard] step 7962: SKIPPED update (grad_norm=11.8, skipped_total=736).
+[grad-spike guard] step 7967: SKIPPED update (grad_norm=10.9, skipped_total=741).
+step 0007970 | loss 3.7609 | ema 3.5652 | best_ema 3.1654 (+937 steps) | lr 1.94e-04 | alpha 0.250 | tok/s 72,846 | tokens 2,090,074,112
+[grad-spike guard] step 7972: SKIPPED update (grad_norm=11.4, skipped_total=746).
+[grad-spike guard] step 7977: SKIPPED update (grad_norm=11.7, skipped_total=751).
+step 0007980 | loss 3.3582 | ema 3.4836 | best_ema 3.1654 (+947 steps) | lr 1.94e-04 | alpha 0.250 | tok/s 72,541 | tokens 2,092,695,552
+[grad-spike guard] step 7982: SKIPPED update (grad_norm=11.5, skipped_total=756).
+[grad-spike guard] step 7987: SKIPPED update (grad_norm=11.1, skipped_total=761).
+step 0007990 | loss 3.7821 | ema 3.5068 | best_ema 3.1654 (+957 steps) | lr 1.93e-04 | alpha 0.250 | tok/s 72,718 | tokens 2,095,316,992
+[grad-spike guard] step 7992: SKIPPED update (grad_norm=11.0, skipped_total=766).
+[grad-spike guard] step 7997: SKIPPED update (grad_norm=11.6, skipped_total=771).
+step 0008000 | loss 3.7184 | ema 3.5941 | best_ema 3.1654 (+967 steps) | lr 1.93e-04 | alpha 0.250 | tok/s 72,943 | tokens 2,097,938,432
+eval step 8000: {'val_loss': 3.4037570357322693, 'val_ppl': 30.076887983443562}
+saved checkpoint at step 8000
+CORE eval step 8000: 0.0539
+HumanEval step 8000: pass@1=0.0000
+`trust_remote_code` is not supported anymore.
+Please check that the Hugging Face dataset 'google-research-datasets/mbpp' isn't based on a loading script and remove `trust_remote_code`.
+If the dataset is based on a loading script, please ask the dataset author to remove it and convert it to a standard format like Parquet.
+MBPP step 8000: pass@1=0.0000 bon=0.0000
+[grad-spike guard] step 8002: SKIPPED update (grad_norm=10.4, skipped_total=776).
+[grad-spike guard] step 8007: SKIPPED update (grad_norm=11.7, skipped_total=781).
+step 0008010 | loss 3.5675 | ema 3.5840 | best_ema 3.1654 (+977 steps) | lr 1.92e-04 | alpha 0.250 | tok/s 4,471 | tokens 2,100,559,872
+[grad-spike guard] step 8012: SKIPPED update (grad_norm=11.0, skipped_total=786).
+[grad-spike guard] step 8017: SKIPPED update (grad_norm=11.1, skipped_total=791).
+step 0008020 | loss 3.2704 | ema 3.5253 | best_ema 3.1654 (+987 steps) | lr 1.92e-04 | alpha 0.250 | tok/s 72,945 | tokens 2,103,181,312
+[grad-spike guard] step 8022: SKIPPED update (grad_norm=12.2, skipped_total=796).
+[grad-spike guard] step 8027: SKIPPED update (grad_norm=11.4, skipped_total=801).
+step 0008030 | loss 3.2770 | ema 3.5030 | best_ema 3.1654 (+997 steps) | lr 1.91e-04 | alpha 0.250 | tok/s 72,778 | tokens 2,105,802,752
+[grad-spike guard] step 8032: SKIPPED update (grad_norm=11.5, skipped_total=806).
+[grad-spike guard] step 8037: SKIPPED update (grad_norm=12.0, skipped_total=811).
+step 0008040 | loss 3.6474 | ema 3.5293 | best_ema 3.1654 (+1007 steps) | lr 1.91e-04 | alpha 0.250 | tok/s 72,928 | tokens 2,108,424,192
+[grad-spike guard] step 8042: SKIPPED update (grad_norm=11.3, skipped_total=816).
+[grad-spike guard] step 8047: SKIPPED update (grad_norm=11.4, skipped_total=821).
+step 0008050 | loss 3.9373 | ema 3.5505 | best_ema 3.1654 (+1017 steps) | lr 1.90e-04 | alpha 0.250 | tok/s 72,887 | tokens 2,111,045,632
+[grad-spike guard] step 8052: SKIPPED update (grad_norm=11.4, skipped_total=826).
+[grad-spike guard] step 8057: SKIPPED update (grad_norm=10.9, skipped_total=831).
+step 0008060 | loss 3.4134 | ema 3.5570 | best_ema 3.1654 (+1027 steps) | lr 1.90e-04 | alpha 0.250 | tok/s 72,666 | tokens 2,113,667,072
+[grad-spike guard] step 8062: SKIPPED update (grad_norm=11.4, skipped_total=836).
+[grad-spike guard] step 8067: SKIPPED update (grad_norm=11.7, skipped_total=841).
+step 0008070 | loss 3.7343 | ema 3.5077 | best_ema 3.1654 (+1037 steps) | lr 1.89e-04 | alpha 0.250 | tok/s 72,458 | tokens 2,116,288,512
+[grad-spike guard] step 8072: SKIPPED update (grad_norm=11.4, skipped_total=846).
+[grad-spike guard] step 8077: SKIPPED update (grad_norm=11.8, skipped_total=851).
+step 0008080 | loss 3.4741 | ema 3.4726 | best_ema 3.1654 (+1047 steps) | lr 1.89e-04 | alpha 0.250 | tok/s 72,414 | tokens 2,118,909,952
+[grad-spike guard] step 8082: SKIPPED update (grad_norm=11.8, skipped_total=856).
+[grad-spike guard] step 8087: SKIPPED update (grad_norm=11.5, skipped_total=861).
+step 0008090 | loss 3.3510 | ema 3.5269 | best_ema 3.1654 (+1057 steps) | lr 1.88e-04 | alpha 0.250 | tok/s 72,803 | tokens 2,121,531,392
+[grad-spike guard] step 8092: SKIPPED update (grad_norm=11.2, skipped_total=866).
+[grad-spike guard] step 8097: SKIPPED update (grad_norm=9.3, skipped_total=871).
+step 0008100 | loss 3.3576 | ema 3.5006 | best_ema 3.1654 (+1067 steps) | lr 1.88e-04 | alpha 0.250 | tok/s 71,749 | tokens 2,124,152,832
+[grad-spike guard] step 8102: SKIPPED update (grad_norm=11.9, skipped_total=876).
+[grad-spike guard] step 8107: SKIPPED update (grad_norm=11.5, skipped_total=881).
+step 0008110 | loss 3.5641 | ema 3.5059 | best_ema 3.1654 (+1077 steps) | lr 1.87e-04 | alpha 0.250 | tok/s 72,620 | tokens 2,126,774,272
+[grad-spike guard] step 8112: SKIPPED update (grad_norm=11.4, skipped_total=886).
+582 | ema 3.4836 | best_ema 3.1654 (+947 steps) | lr 1.94e-04 | alpha 0.250 | tok/s 72,541 | tokens 2,092,695,552
+[grad-spike guard] step 7982: SKIPPED update (grad_norm=11.5, skipped_total=756).
+[grad-spike guard] step 7987: SKIPPED update (grad_norm=11.1, skipped_total=761).
+step 0007990 | loss 3.7821 | ema 3.5068 | best_ema 3.1654 (+957 steps) | lr 1.93e-04 | alpha 0.250 | tok/s 72,718 | tokens 2,095,316,992
+[grad-spike guard] step 7992: SKIPPED update (grad_norm=11.0, skipped_total=766).
+[grad-spike guard] step 7997: SKIPPED update (grad_norm=11.6, skipped_total=771).
+step 0008000 | loss 3.7184 | ema 3.5941 | best_ema 3.1654 (+967 steps) | lr 1.93e-04 | alpha 0.250 | tok/s 72,943 | tokens 2,097,938,432
+eval step 8000: {'val_loss': 3.4037570357322693, 'val_ppl': 30.076887983443562}
+saved checkpoint at step 8000
+CORE eval step 8000: 0.0539
+HumanEval step 8000: pass@1=0.0000
+`trust_remote_code` is not supported anymore.
+Please check that the Hugging Face dataset 'google-research-datasets/mbpp' isn't based on a loading script and remove `trust_remote_code`.
+If the dataset is based on a loading script, please ask the dataset author to remove it and convert it to a standard format like Parquet.
+MBPP step 8000: pass@1=0.0000 bon=0.0000
+[grad-spike guard] step 8002: SKIPPED update (grad_norm=10.4, skipped_total=776).
+[grad-spike guard] step 8007: SKIPPED update (grad_norm=11.7, skipped_total=781).
+step 0008010 | loss 3.5675 | ema 3.5840 | best_ema 3.1654 (+977 steps) | lr 1.92e-04 | alpha 0.250 | tok/s 4,471 | tokens 2,100,559,872
+[grad-spike guard] step 8012: SKIPPED update (grad_norm=11.0, skipped_total=786).
+[grad-spike guard] step 8017: SKIPPED update (grad_norm=11.1, skipped_total=791).
+step 0008020 | loss 3.2704 | ema 3.5253 | best_ema 3.1654 (+987 steps) | lr 1.92e-04 | alpha 0.250 | tok/s 72,945 | tokens 2,103,181,312
+[grad-spike guard] step 8022: SKIPPED update (grad_norm=12.2, skipped_total=796).
+[grad-spike guard] step 8027: SKIPPED update (grad_norm=11.4, skipped_total=801).
+step 0008030 | loss 3.2770 | ema 3.5030 | best_ema 3.1654 (+997 steps) | lr 1.91e-04 | alpha 0.250 | tok/s 72,778 | tokens 2,105,802,752
+[grad-spike guard] step 8032: SKIPPED update (grad_norm=11.5, skipped_total=806).
+[grad-spike guard] step 8037: SKIPPED update (grad_norm=12.0, skipped_total=811).
+step 0008040 | loss 3.6474 | ema 3.5293 | best_ema 3.1654 (+1007 steps) | lr 1.91e-04 | alpha 0.250 | tok/s 72,928 | tokens 2,108,424,192
+[grad-spike guard] step 8042: SKIPPED update (grad_norm=11.3, skipped_total=816).
+[grad-spike guard] step 8047: SKIPPED update (grad_norm=11.4, skipped_total=821).
+step 0008050 | loss 3.9373 | ema 3.5505 | best_ema 3.1654 (+1017 steps) | lr 1.90e-04 | alpha 0.250 | tok/s 72,887 | tokens 2,111,045,632
+[grad-spike guard] step 8052: SKIPPED update (grad_norm=11.4, skipped_total=826).
+[grad-spike guard] step 8057: SKIPPED update (grad_norm=10.9, skipped_total=831).
+step 0008060 | loss 3.4134 | ema 3.5570 | best_ema 3.1654 (+1027 steps) | lr 1.90e-04 | alpha 0.250 | tok/s 72,666 | tokens 2,113,667,072
+[grad-spike guard] step 8062: SKIPPED update (grad_norm=11.4, skipped_total=836).
+[grad-spike guard] step 8067: SKIPPED update (grad_norm=11.7, skipped_total=841).
+step 0008070 | loss 3.7343 | ema 3.5077 | best_ema 3.1654 (+1037 steps) | lr 1.89e-04 | alpha 0.250 | tok/s 72,458 | tokens 2,116,288,512
+[grad-spike guard] step 8072: SKIPPED update (grad_norm=11.4, skipped_total=846).
+[grad-spike guard] step 8077: SKIPPED update (grad_norm=11.8, skipped_total=851).
+step 0008080 | loss 3.4741 | ema 3.4726 | best_ema 3.1654 (+1047 steps) | lr 1.89e-04 | alpha 0.250 | tok/s 72,414 | tokens 2,118,909,952
+[grad-spike guard] step 8082: SKIPPED update (grad_norm=11.8, skipped_total=856).
+[grad-spike guard] step 8087: SKIPPED update (grad_norm=11.5, skipped_total=861).
+step 0008090 | loss 3.3510 | ema 3.5269 | best_ema 3.1654 (+1057 steps) | lr 1.88e-04 | alpha 0.250 | tok/s 72,803 | tokens 2,121,531,392
+[grad-spike guard] step 8092: SKIPPED update (grad_norm=11.2, skipped_total=866).
+[grad-spike guard] step 8097: SKIPPED update (grad_norm=9.3, skipped_total=871).
+step 0008100 | loss 3.3576 | ema 3.5006 | best_ema 3.1654 (+1067 steps) | lr 1.88e-04 | alpha 0.250 | tok/s 71,749 | tokens 2,124,152,832
+[grad-spike guard] step 8102: SKIPPED update (grad_norm=11.9, skipped_total=876).
+[grad-spike guard] step 8107: SKIPPED update (grad_norm=11.5, skipped_total=881).
+step 0008110 | loss 3.5641 | ema 3.5059 | best_ema 3.1654 (+1077 steps) | lr 1.87e-04 | alpha 0.250 | tok/s 72,620 | tokens 2,126,774,272
+[grad-spike guard] step 8112: SKIPPED update (grad_norm=11.4, skipped_total=886).

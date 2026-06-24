@@ -1,0 +1,12 @@
+#!/usr/bin/expect -f
+set timeout 60
+set pubkey [lindex $argv 0]
+set host "prateek@trux-hayabusa.uni.lux"
+set pw "wsDP0RJPLhd2IwY"
+spawn ssh -o StrictHostKeyChecking=accept-new $host "mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo '$pubkey' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && echo KEY_INSTALLED"
+expect {
+  -re "(?i)password:" { send "$pw\r"; exp_continue }
+  "KEY_INSTALLED" { }
+  timeout { puts "TIMEOUT"; exit 1 }
+  eof
+}

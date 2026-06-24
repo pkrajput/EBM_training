@@ -114,13 +114,23 @@ def latest_checkpoint(out_dir: Path) -> Path | None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Train the 1B EBT on ClimbMix.")
+    parser = argparse.ArgumentParser(description="Train the EBT on ClimbMix.")
     parser.add_argument("--config", default="configs/ebt_191m_climbmix_8xb200.json")
     parser.add_argument("--resume-from", default=None)
     parser.add_argument("--no-resume", action="store_true")
+    # Randomized-MCMC switch (the EBT 'System-2' recipe). Overrides the config
+    # when set. randomize-mcmc-steps=0 turns randomization OFF (fixed depth).
+    parser.add_argument("--randomize-mcmc-steps", type=int, default=None,
+                        help="override model.randomize_mcmc_num_steps (0 = OFF / fixed depth)")
+    parser.add_argument("--randomize-mcmc-min", type=int, default=None,
+                        help="override model.randomize_mcmc_num_steps_min")
     args = parser.parse_args()
 
     config = load_config(args.config)
+    if args.randomize_mcmc_steps is not None:
+        config.model.randomize_mcmc_num_steps = args.randomize_mcmc_steps
+    if args.randomize_mcmc_min is not None:
+        config.model.randomize_mcmc_num_steps_min = args.randomize_mcmc_min
     ddp, rank, local_rank, world_size, device = init_distributed()
     master = rank == 0
     torch.manual_seed(config.train.seed + rank)

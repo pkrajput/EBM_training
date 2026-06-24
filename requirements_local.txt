@@ -1,0 +1,15 @@
+# Local (CPU/MPS) requirements to LOAD and TEST the trained 191M EBT.
+# Verified working on macOS (Apple Silicon, CPU/MPS) with Python 3.13.
+# For GPU training reproduction use requirements_blackwell.txt (B200/Blackwell)
+# or requirements.txt (Hopper) instead.
+torch>=2.4
+transformers>=4.40
+pytorch-lightning>=2.0
+torchmetrics>=1.0
+diffusers>=0.27
+torchvision
+sentencepiece
+einops
+datasets>=2.18
+numpy
+PyYAML>=6.0

@@ -1,12 +1,0 @@
-spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux tail -8 ~/boot.log 2>/dev/null; echo "---done?---"; grep -c BOOTSTRAP_DONE ~/boot.log 2>/dev/null
-prateek@trux-tsubame.uni.lux's password: 
-download shard_00039.parquet (attempt 1/5)
-download shard_06541.parquet (attempt 1/5)
-download shard_06542.parquet (attempt 1/5)
-Prepared ClimbMix manifest: data/climbmix/manifest.json
-Train shards: 40
-Validation shard: shard_06542.parquet
-Test shard: shard_06541.parquet
-BOOTSTRAP_DONE
----done?---
-1

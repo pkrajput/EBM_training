@@ -1,12 +1,0 @@
-spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux echo REMOTE_OK; nvidia-smi --query-gpu=index,name,memory.used,memory.total,utilization.gpu --format=csv,noheader; echo CPU; nproc; echo DISK; df -h ~ | tail -1; echo SCREEN; which screen git
-prateek@trux-tsubame.uni.lux's password: 
-REMOTE_OK
-0, NVIDIA RTX 6000 Ada Generation, 20851 MiB, 49140 MiB, 100 %
-1, NVIDIA RTX 6000 Ada Generation, 732 MiB, 49140 MiB, 10 %
-CPU
-80
-DISK
-/dev/mapper/ubuntu--vg-lv--0  3.5T  2.5T  873G  75% /
-SCREEN
-/usr/bin/screen
-/usr/bin/git

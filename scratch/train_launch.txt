@@ -1,5 +1,0 @@
-spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux cd ~/ebm/energy-coding && rm -f pipeline.log && screen -dmS train bash -c "cd ~/ebm/energy-coding && export CUDA_VISIBLE_DEVICES=1 && export HF_HOME=~/hf_cache && export WANDB_API_KEY=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 && source .venv/bin/activate && bash run/train_full_pipeline_randmcmc_2gpu.sh 2>&1 | tee pipeline.log"; sleep 4; screen -ls
-prateek@trux-tsubame.uni.lux's password: 
-There is a screen on:
-	3951024.train	(06/24/2026 04:39:01 PM)	(Detached)
-1 Socket in /run/screen/S-prateek.

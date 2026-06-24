@@ -1,4 +1,0 @@
-spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux nvidia-smi --query-gpu=index,memory.used,memory.total,utilization.gpu --format=csv,noheader
-prateek@trux-tsubame.uni.lux's password: 
-0, 21835 MiB, 49140 MiB, 100 %
-1, 4 MiB, 49140 MiB, 0 %

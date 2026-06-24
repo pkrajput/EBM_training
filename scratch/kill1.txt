@@ -1,3 +1,0 @@
-spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux screen -S train -X quit 2>/dev/null; pkill -9 -f train_191m.py 2>/dev/null; sleep 2; nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv,noheader; echo "---free gpu check---"
-prateek@trux-tsubame.uni.lux's password: 
-No screen session found.

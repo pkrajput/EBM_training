@@ -1,12 +1,0 @@
-spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux cd ~/ebm/energy-coding && echo "==MCMC line=="; grep -iE "MCMC train|Parameters|Global tokens" pipeline.log | tail -3; echo "==steps=="; grep -E "^step " pipeline.log | tail -4; echo "==errors=="; grep -iE "error|traceback|out of memory|no module" pipeline.log | grep -vE "Warning" | tail -3; echo "==gpu1=="; nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv,noheader | sed -n "2p"
-prateek@trux-tsubame.uni.lux's password: 
-==MCMC line==
-Parameters: 191,126,631 (0.19B)
-Global tokens/step: 32,768
-MCMC train steps: 2; randomized up to 3
-==steps==
-==errors==
-Traceback (most recent call last):
-torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 100.00 MiB. GPU 0 has a total capacity of 47.37 GiB of which 47.69 MiB is free. Including non-PyTorch memory, this process has 47.32 GiB memory in use. Of the allocated memory 46.65 GiB is allocated by PyTorch, and 163.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
-==gpu1==
-1, 4 MiB, 0 %

@@ -64,3 +64,5 @@ Miniconda3-latest-MacOSX-arm64.sh
 # Local SSH helpers / probes (may contain credentials) — never commit
 scratch/*.exp
 scratch/uni_*.txt
+scratch/*.txt
+scratch/*.log

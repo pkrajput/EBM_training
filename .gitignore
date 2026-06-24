@@ -60,3 +60,7 @@ Miniconda3-latest-MacOSX-arm64.sh
 
 # Microsoft Word/Excel lock files
 ~$*
+
+# Local SSH helpers / probes (may contain credentials) — never commit
+scratch/*.exp
+scratch/uni_*.txt

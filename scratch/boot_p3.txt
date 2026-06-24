@@ -1,0 +1,11 @@
+spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux echo DONE_COUNT; grep -c BOOTSTRAP_DONE ~/boot.log 2>/dev/null; echo ERRORS; grep -iE "error|traceback|no module|failed|could not find" ~/boot.log 2>/dev/null | grep -vE "error_file" | tail -5; echo DATA; du -sh ~/ebm/energy-coding/data/climbmix 2>/dev/null; echo LASTLINE; tail -2 ~/boot.log 2>/dev/null | tr -d "\r" | cut -c1-120
+prateek@trux-tsubame.uni.lux's password: 
+DONE_COUNT
+1
+ERRORS
+[?25h[1A[2K[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+DATA
+3.6G	/home/prateek/ebm/energy-coding/data/climbmix
+LASTLINE
+Test shard: shard_06541.parquet
+BOOTSTRAP_DONE

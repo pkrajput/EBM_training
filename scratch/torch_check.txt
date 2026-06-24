@@ -1,0 +1,5 @@
+spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux cd ~/ebm/energy-coding && CUDA_VISIBLE_DEVICES=1 ./.venv/bin/python -c "import torch; print(\"torch\", torch.__version__, \"cuda\", torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"NO GPU\"); import torch as t; p=t.cuda.get_device_properties(0); print(\"sm\", p.major, p.minor, \"mem GB\", round(p.total_memory/1e9,1))"
+prateek@trux-tsubame.uni.lux's password: 
+torch 2.4.0+cu121 cuda True
+NVIDIA RTX 6000 Ada Generation
+sm 8 9 mem GB 50.9

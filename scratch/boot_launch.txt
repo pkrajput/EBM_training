@@ -1,0 +1,5 @@
+spawn ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o PubkeyAuthentication=no -o PreferredAuthentications=password prateek@trux-tsubame.uni.lux screen -dmS boot -L -Logfile ~/boot.log bash -c "cd ~ && rm -rf ebm && mkdir -p ebm && cd ebm && git clone https://github.com/pkrajput/EBM_training.git energy-coding && cd energy-coding && bash run/setup_gpu.sh && CONFIG=configs/ebt_191m_randmcmc_2gpu.json NUM_TRAIN_SHARDS=40 bash run/prepare_climbmix.sh && echo BOOTSTRAP_DONE"; sleep 3; screen -ls
+prateek@trux-tsubame.uni.lux's password: 
+There is a screen on:
+	3926001.boot	(06/24/2026 04:31:33 PM)	(Detached)
+1 Socket in /run/screen/S-prateek.

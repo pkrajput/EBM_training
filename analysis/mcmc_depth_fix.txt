@@ -1,0 +1,185 @@
+================================================================================
+WHY MORE MCMC STEPS DON'T HELP OUR 191M EBT  —  ROOT CAUSE + FIX + COST
+================================================================================
+Date: 2026-07-25
+Scope: diagnose the "no gains with depth/effort" problem, propose the fix, and
+estimate the hardware + time to train the 191M model "nicely" and evaluate on
+ARC-Easy MCQ. The old scripts/configs/checkpoint are KEPT unchanged — the
+fixed-depth model is the System-1 control for the paper.
+
+--------------------------------------------------------------------------------
+1. THE OBSERVATION
+--------------------------------------------------------------------------------
+mcq_reproduction/README.md, ARC-Easy, our 191M pretrain-base checkpoint:
+    EBT depth=1   acc 47.0%
+    EBT depth=2   acc 45.5%   (down)
+    EBT depth=4   acc 45.0%   (down)
+More "thinking" does NOT help; it very slightly HURTS.
+
+Same story in training telemetry (models/ebt_191m/pretrain_eval_metrics.jsonl):
+    core_metric_at_1 ~= core_metric_at_2  at every eval
+    core_thinking_gain  ~ 0.002 – 0.026   (essentially zero)
+
+--------------------------------------------------------------------------------
+2. THE ACTUAL ROOT CAUSE  (it is NOT the initialization)
+--------------------------------------------------------------------------------
+The suspected culprit was "non-random MCMC initialization." That is not it:
+`ModelConfig.denoising_initial_condition` defaults to "random_noise"
+(src/energy_coding/config.py:37) and the checkpoint's config
+(configs/ebt_191m_climbmix_8xb200.json) does NOT override it — so the current
+model already initializes MCMC from random noise.
+
+The real cause is the TRAINING-TIME MCMC schedule. The checkpoint was trained
+with (configs/ebt_191m_climbmix_8xb200.json):
+    mcmc_num_steps            = 2      (fixed)
+    randomize_mcmc_num_steps  = 0      (NO randomization)   <-- the problem
+    mcmc_step_size_learnable  = false  (alpha pinned 0.25)
+    langevin_dynamics_noise   = 1.0
+    truncate_mcmc             = false
+    mcmc_replay_buffer        = false
+
+Because the model ONLY ever saw exactly 2 optimization steps during training, it
+learned a 2-step *amortized shortcut* to a good answer, not a genuine iterative
+energy descent. Nothing in the loss ever rewarded the energy landscape for
+continuing to decrease past step 2. So at inference, extra MCMC steps have no
+traction and, with the energy-scaled step size, slightly overshoot — hence
+47.0 -> 45.5 -> 45.0.
+
+This is exactly the failure mode the EBT paper warns about. Its "System-2"
+recipe (see EBT/model/nlp/ebt.py forward(), lines 93-113, and the S2 job script
+referenced in config.py:46-51) gets thinking-gains from three knobs, ALL of
+which are OFF in our trained checkpoint:
+    (a) randomize_mcmc_num_steps  – train with a VARIABLE number of steps so the
+        landscape must stay descendable for any step count (min 2 .. max 4).
+    (b) randomize_mcmc_step_size_scale – jitter the step size each step.
+    (c) langevin_dynamics_noise   – stochastic (Langevin) MCMC so the landscape
+        is smooth, not a razor-thin 2-step path.
+Confirmed in code: with randomize_mcmc_num_steps=0 the forward() step loop is a
+plain `for step in range(mcmc_num_steps)` (ebt.py:112-113) — no path variety.
+
+--------------------------------------------------------------------------------
+3. THE FIX  (already the right direction in the randmcmc config)
+--------------------------------------------------------------------------------
+Retrain the 191M with the randomized-MCMC (System-2) recipe. The knobs live in
+the model block of the config:
+    mcmc_num_steps            = 1
+    randomize_mcmc_num_steps  = 3      (so eval can push depth to 4+)
+    randomize_mcmc_num_steps_min = 2
+    randomize_mcmc_step_size_scale = 2.0
+    langevin_dynamics_noise   = 3.0
+    truncate_mcmc             = true   (only final step keeps the graph -> memory)
+    mcmc_replay_buffer        = true   (size 48, sample 0.25 -> landscape shaping)
+    denoising_initial_condition = "random_noise"
+
+New vast-ready file: configs/ebt_191m_randmcmc_8gpu.json
+New launcher:        run/train_191m_randmcmc_8gpu.sh
+(The existing configs/ebt_191m_randmcmc_2gpu.json is the single-/2-GPU uni-box
+version; the 8gpu file just scales batch + GPUs and keeps the proven global
+batch of 262,144 tokens/step so the LR schedule transfers from the old run.)
+
+CONTROLLED STUDY for the paper (one config, one code path):
+    System-2 arm :  bash run/train_191m_randmcmc_8gpu.sh
+    System-1 arm :  bash run/train_191m_randmcmc_8gpu.sh --randomize-mcmc-steps 0
+The --randomize-mcmc-steps flag (train_191m.py:134-138) flips ONLY the
+randomization, so the two arms differ in exactly one variable. Keep the old
+checkpoint as the "first attempt" record; the clean ablation is these two arms.
+
+Success = a monotone (or at least positive) depth curve on ARC-Easy
+(acc(depth4) > acc(depth1)) and core_thinking_gain climbing above ~0.03 and
+growing over training. We should SEE the sign of this early (first ~1-2B
+tokens); if depth is still flat at 2B tokens, stop and re-tune before paying for
+the full run.
+
+--------------------------------------------------------------------------------
+4. HARDWARE + TIME  (grounded in our own measured throughput)
+--------------------------------------------------------------------------------
+Measured on the old 8-GPU run (models/ebt_191m/pipeline.log: world_size=8;
+pretrain_train_metrics.jsonl): ~73K tokens/sec aggregate, 262,144 tokens/step,
+fixed 2 MCMC steps, bf16, compile OFF.
+
+The randomized recipe does ~2-4 landscape passes/step (min2..max4) plus a
+replay-buffer draw, so expect ~0.45-0.6x the token throughput of the 2-step run:
+    ~35-45K tok/s aggregate on 8 similar GPUs (compile OFF).
+
+VRAM: 191M params, seq 512. truncate_mcmc frees non-final graphs, so peak is
+close to the old 2-step run. Fits comfortably on 8x 80GB (H100/A100-80GB) at
+device_batch_size=4, accum=16. On B200/141GB bump to bs=8/accum=8 for speed.
+
+Recommended box on vast.ai:  8x H100-80GB (SXM)  — best price/perf and plentiful.
+                             8x A100-80GB also fine (~1.5-1.8x slower).
+                             8x B200 fastest if available/affordable.
+
+Wall-clock for the System-2 pretrain (per arm), at ~40K tok/s on 8x H100:
+    Early depth-gain signal (~1.5B tokens)          :  ~10-12 hours
+    Chinchilla-ish "decent" (~4B tokens)            :  ~1.2-1.5 days
+    "Nice" full run (target 10B tokens in config)   :  ~2.5-3.5 days
+On 8x B200 (compile off) knock ~35-45% off those. Turning on torch.compile
+(compile_model=true) can cut another 20-30% but has occasionally been unstable
+with the double-backward MCMC graph — validate on the smoke test first.
+
+Budget for BOTH arms (System-2 + System-1 control) => roughly 2x the above, or
+run them back-to-back / on two 4-GPU boxes.
+
+ARC-Easy MCQ eval is cheap: mcq_reproduction/run_mcq.sh, ~1-3 min per depth for
+200 questions on a single GPU. Run it against each saved checkpoint; no separate
+allocation needed. Push --limit to 570 (full val split) for tight error bars.
+
+--------------------------------------------------------------------------------
+5. WHAT TO MOVE WHERE (vast has slow async/ssh copy)
+--------------------------------------------------------------------------------
+Via git (small, fast):
+    all code, configs, run/ scripts, mcq_reproduction/  (already tracked).
+Via Google Drive -> download on the box (large):
+    - Tokenized ClimbMix shards / manifest (data/climbmix/…) for pretraining.
+      This is the only big pretraining input; everything else regenerates.
+    - Optional: the old checkpoint models/ebt_191m/ebt_191m_pretrain_base_step7000.pt
+      if you want to re-run the OLD (System-1) ARC-Easy numbers on the box.
+The ARC-Easy eval data + GPT-2 baseline are already bundled inside
+mcq_reproduction/ (offline), so nothing to transfer for eval.
+
+Sanity-before-spend on the box:
+    bash run/setup_gpu.sh              # env + clone EBT/nanochat + deps
+    bash run/smoke_test.sh             # tiny run, confirms the loop + DDP
+    export WANDB_API_KEY=...           # metrics (loss + CORE + per-depth curves)
+    bash run/train_191m_randmcmc_8gpu.sh
+Watch in W&B: core_thinking_gain and core_metric_at_1 vs core_metric_at_4 —
+those are the numbers that tell us the depth fix is working.
+
+--------------------------------------------------------------------------------
+6. BUDGET PATH: 8x RTX 5090 (32 GB) under $300
+--------------------------------------------------------------------------------
+8x H100 wasn't available; the affordable box is 8x RTX 5090 @ $2.987/hr
+($300 ~= 100 GPU-hours for the whole box). This works, with two constraints:
+  - 32 GB VRAM (vs 80): randomized MCMC + no_mcmc_detach is activation-heavy
+    (OOM'd at bs=2 even on 48 GB) -> device_batch_size = 1.
+  - Slower per-GPU than H100 -> fewer tokens per dollar.
+
+Blackwell (sm_120) is ALREADY handled: run/setup_gpu_blackwell.sh installs
+torch 2.7.1+cu128 and the vast.ai NCCL-hang fix. Use that, not setup_gpu.sh.
+
+Files:  configs/ebt_191m_randmcmc_8x5090.json  +  run/train_191m_randmcmc_8x5090.sh
+  device_batch_size 1, accum 16, world 8  -> 65,536 tokens / optimizer step
+  (small batch on purpose: more updates per token when TOKENS, not compute, are
+   the budget limit). LR lowered to 1.2e-4 for the smaller batch. target_tokens
+   3.5B (~53,400 steps), warmdown completes at that target.
+
+COST CONTROL — benchmark first, then commit:
+  1. setup_gpu_blackwell.sh; smoke_test; export WANDB_API_KEY.
+  2. Launch and read `tok_per_sec` after ~200 steps warm up.
+  3. Affordable tokens ~= tok_per_sec * 85 * 3600 (leaves ~15 h of the 100 for
+     setup/eval/restarts). If that's < 3.5B, lower target_tokens so the LR
+     schedule still finishes; if > 3.5B and stable, you may raise it.
+     Rough table (aggregate tok/s -> tokens in ~85 h -> approx $ at that point):
+        8k  -> ~2.4B  (~$300 to reach 2.4B)
+        12k -> ~3.7B  (3.5B target finishes in ~81 h ~= $242)
+        18k -> ~5.5B  (3.5B target finishes in ~54 h ~= $161; can raise target)
+  4. ONE paid run only: use the existing fixed-depth checkpoint (step7000, 1.8B
+     tokens) as the System-1 control. Compare it to this run's ~1.8B-token
+     checkpoint (matched tokens, clean ablation) and to the final 3.5B one.
+     Don't pay to retrain the control unless a run finishes with budget to spare.
+
+Expectation setting: 3.5B tokens is ~Chinchilla-optimal for 191M — enough to
+DEMONSTRATE the depth fix (positive, growing core_thinking_gain; ARC-Easy acc
+rising with depth) and to beat the old fixed-depth model at matched tokens. It
+is NOT the full 10B "nice" run; that needs the H100 box or more budget.
+================================================================================

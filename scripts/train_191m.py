@@ -42,7 +42,9 @@ class EBTLossWrapper(torch.nn.Module):
         super().__init__()
         self.model = model
 
-    def forward(self, batch: dict[str, torch.Tensor], phase: str = "train") -> torch.Tensor:
+    def forward(
+        self, batch: dict[str, torch.Tensor], phase: str = "train"
+    ) -> torch.Tensor:
         return self.model.forward_loss_wrapper(batch, phase=phase)["loss"]
 
 
@@ -61,7 +63,12 @@ def _ebt_pretrain_aux_snapshot(raw_model, batch) -> dict[str, float]:
     except Exception:
         return {}
     out: dict[str, float] = {}
-    for key in ("initial_loss", "final_step_loss", "perplexity", "initial_final_pred_energies_gap"):
+    for key in (
+        "initial_loss",
+        "final_step_loss",
+        "perplexity",
+        "initial_final_pred_energies_gap",
+    ):
         value = metrics.get(key)
         if isinstance(value, torch.Tensor):
             try:
@@ -99,14 +106,18 @@ def precision_context(precision: str, device: str):
     if precision == "bf16":
         return torch.amp.autocast("cuda", dtype=torch.bfloat16), None
     if precision == "fp16":
-        return torch.amp.autocast("cuda", dtype=torch.float16), torch.amp.GradScaler("cuda")
+        return torch.amp.autocast("cuda", dtype=torch.float16), torch.amp.GradScaler(
+            "cuda"
+        )
     if precision == "fp32":
         return nullcontext(), None
     raise ValueError(f"Unsupported precision: {precision}")
 
 
 def latest_checkpoint(out_dir: Path) -> Path | None:
-    checkpoints = sorted(out_dir.glob("ckpt_step_*.pt"), key=lambda p: int(p.stem.split("_")[-1]))
+    checkpoints = sorted(
+        out_dir.glob("ckpt_step_*.pt"), key=lambda p: int(p.stem.split("_")[-1])
+    )
     if checkpoints:
         return checkpoints[-1]
     ckpt = out_dir / "ckpt_latest.pt"
@@ -120,10 +131,18 @@ def main() -> None:
     parser.add_argument("--no-resume", action="store_true")
     # Randomized-MCMC switch (the EBT 'System-2' recipe). Overrides the config
     # when set. randomize-mcmc-steps=0 turns randomization OFF (fixed depth).
-    parser.add_argument("--randomize-mcmc-steps", type=int, default=None,
-                        help="override model.randomize_mcmc_num_steps (0 = OFF / fixed depth)")
-    parser.add_argument("--randomize-mcmc-min", type=int, default=None,
-                        help="override model.randomize_mcmc_num_steps_min")
+    parser.add_argument(
+        "--randomize-mcmc-steps",
+        type=int,
+        default=None,
+        help="override model.randomize_mcmc_num_steps (0 = OFF / fixed depth)",
+    )
+    parser.add_argument(
+        "--randomize-mcmc-min",
+        type=int,
+        default=None,
+        help="override model.randomize_mcmc_num_steps_min",
+    )
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -170,7 +189,9 @@ def main() -> None:
             print0(rank, f"W&B init failed, continuing with JSONL metrics only: {exc}")
 
     manifest = load_manifest(config.data.data_dir)
-    tokenizer = AutoTokenizer.from_pretrained(config.data.tokenizer, clean_up_tokenization_spaces=False)
+    tokenizer = AutoTokenizer.from_pretrained(
+        config.data.tokenizer, clean_up_tokenization_spaces=False
+    )
     train_loader = iter(
         BestFitCausalLoader(
             tokenizer=tokenizer,
@@ -212,7 +233,9 @@ def main() -> None:
         * world_size
     )
     if config.train.max_steps < 1:
-        config.train.max_steps = math.ceil(config.train.target_tokens / global_tokens_per_step)
+        config.train.max_steps = math.ceil(
+            config.train.target_tokens / global_tokens_per_step
+        )
 
     print0(rank, f"Run: {config.train.run_name}")
     print0(rank, f"Device: {device} | world_size={world_size}")
@@ -221,7 +244,10 @@ def main() -> None:
     print0(rank, f"Max steps: {config.train.max_steps:,}")
     print0(rank, f"Target tokens: {global_tokens_per_step * config.train.max_steps:,}")
     print0(rank, f"Precision: {config.train.precision}")
-    print0(rank, f"MCMC train steps: {config.model.mcmc_num_steps}; randomized up to {config.model.randomize_mcmc_num_steps}")
+    print0(
+        rank,
+        f"MCMC train steps: {config.model.mcmc_num_steps}; randomized up to {config.model.randomize_mcmc_num_steps}",
+    )
 
     loss_module: torch.nn.Module = EBTLossWrapper(raw_model)
     if config.train.compile_model:
@@ -244,7 +270,10 @@ def main() -> None:
             scaler=scaler,
             strict=True,
         )
-        print0(rank, f"Resumed from {resume_path} at step={start_step}, tokens={tokens_seen:,}")
+        print0(
+            rank,
+            f"Resumed from {resume_path} at step={start_step}, tokens={tokens_seen:,}",
+        )
 
     train_model = DDP(loss_module, device_ids=[local_rank]) if ddp else loss_module
     raw_for_save = raw_model
@@ -271,9 +300,10 @@ def main() -> None:
     # divergence (used in large-LM training). Clipping alone is not enough
     # because the clipped-but-still-huge direction can still wreck the model.
     from collections import deque
+
     grad_norm_history: deque[float] = deque(maxlen=100)
-    grad_spike_mult = float(getattr(config.optim, "grad_spike_mult", 0.0) or 8.0)
-    grad_spike_abs = float(getattr(config.optim, "grad_spike_abs", 0.0) or 0.0)
+    grad_spike_mult = float(getattr(config.optim, "grad_spike_mult", 0.0) or 50.0)
+    grad_spike_abs = float(getattr(config.optim, "grad_spike_abs", 0.0) or 50.0)
     skipped_steps = 0
     ended_in_collapse = False
 
@@ -309,7 +339,9 @@ def main() -> None:
         # clip_grad_norm_ returns the TOTAL norm BEFORE clipping — use it as the
         # spike signal. Always clip (even if grad_clip<=0 we still measure).
         clip_val = config.optim.grad_clip if config.optim.grad_clip > 0 else 1e9
-        total_norm = float(torch.nn.utils.clip_grad_norm_(raw_model.parameters(), clip_val))
+        total_norm = float(
+            torch.nn.utils.clip_grad_norm_(raw_model.parameters(), clip_val)
+        )
 
         # Decide whether this update is a spike to be skipped. Only the master
         # decides, then broadcasts, so all ranks stay in lockstep.
@@ -350,7 +382,9 @@ def main() -> None:
 
         tokens_seen += global_tokens_per_step
         loss_value = float(loss.detach().item())
-        smooth_loss = loss_value if smooth_loss is None else 0.9 * smooth_loss + 0.1 * loss_value
+        smooth_loss = (
+            loss_value if smooth_loss is None else 0.9 * smooth_loss + 0.1 * loss_value
+        )
 
         if master:
             if smooth_loss is not None and smooth_loss < best_loss_ema:
@@ -365,8 +399,12 @@ def main() -> None:
         if master and step % config.train.log_interval == 0:
             dt = time.time() - t0
             t0 = time.time()
-            tok_per_sec = global_tokens_per_step * config.train.log_interval / max(dt, 1e-6)
-            lrs_by_group = {f"lr/{g.get('name', 'g')}": g["lr"] for g in optimizer.param_groups}
+            tok_per_sec = (
+                global_tokens_per_step * config.train.log_interval / max(dt, 1e-6)
+            )
+            lrs_by_group = {
+                f"lr/{g.get('name', 'g')}": g["lr"] for g in optimizer.param_groups
+            }
             try:
                 alpha_value = float(raw_model.alpha.detach().item())
             except Exception:
@@ -423,7 +461,9 @@ def main() -> None:
         )
 
         if should_eval:
-            val_metrics = evaluate_loss(raw_model, build_val_loader(), config.train.eval_steps, autocast_context)
+            val_metrics = evaluate_loss(
+                raw_model, build_val_loader(), config.train.eval_steps, autocast_context
+            )
             if master:
                 last_metrics.update(val_metrics)
                 payload = {"step": step, "tokens_seen": tokens_seen, **val_metrics}
@@ -467,12 +507,19 @@ def main() -> None:
                     wandb_payload = {
                         k: v for k, v in payload.items() if not isinstance(v, dict)
                     }
-                    for task_name, task_value in core_metrics.get("core_centered_results", {}).items():
+                    for task_name, task_value in core_metrics.get(
+                        "core_centered_results", {}
+                    ).items():
                         wandb_payload[f"core/{task_name}"] = task_value
-                    for task_name, task_value in core_metrics.get("core_raw_results", {}).items():
+                    for task_name, task_value in core_metrics.get(
+                        "core_raw_results", {}
+                    ).items():
                         wandb_payload[f"core_raw/{task_name}"] = task_value
                     wandb_run.log(wandb_payload)
-                print(f"CORE eval step {step}: {core_metrics['core_metric']:.4f}", flush=True)
+                print(
+                    f"CORE eval step {step}: {core_metrics['core_metric']:.4f}",
+                    flush=True,
+                )
 
         if master and should_humaneval:
             code_metrics = evaluate_humaneval(raw_model, config, device)
@@ -481,19 +528,28 @@ def main() -> None:
             append_metrics(out_dir / "eval_metrics.jsonl", payload)
             if wandb_run is not None:
                 wandb_run.log(payload)
-            print(f"HumanEval step {step}: pass@1={code_metrics['humaneval_pass_at_1']:.4f}", flush=True)
+            print(
+                f"HumanEval step {step}: pass@1={code_metrics['humaneval_pass_at_1']:.4f}",
+                flush=True,
+            )
 
         if master and should_mbpp:
             from energy_coding.evaluation import evaluate_mbpp
+
             mbpp_metrics = evaluate_mbpp(raw_model, config, device)
             last_metrics.update(mbpp_metrics)
             payload = {"step": step, "tokens_seen": tokens_seen, **mbpp_metrics}
             append_metrics(out_dir / "eval_metrics.jsonl", payload)
             if wandb_run is not None:
                 wandb_run.log(payload)
-            print(f"MBPP step {step}: pass@1={mbpp_metrics['mbpp_pass_at_1']:.4f} bon={mbpp_metrics['mbpp_pass_at_1_bon']:.4f}", flush=True)
+            print(
+                f"MBPP step {step}: pass@1={mbpp_metrics['mbpp_pass_at_1']:.4f} bon={mbpp_metrics['mbpp_pass_at_1_bon']:.4f}",
+                flush=True,
+            )
 
-        if ddp and (should_eval or should_save or should_core or should_humaneval or should_mbpp):
+        if ddp and (
+            should_eval or should_save or should_core or should_humaneval or should_mbpp
+        ):
             dist.barrier()
 
         stop_now = False
@@ -507,7 +563,12 @@ def main() -> None:
                 f"Model has degenerated; killing to save budget.",
                 flush=True,
             )
-        if master and not diverging and config.train.loss_patience_steps > 0 and smooth_loss is not None:
+        if (
+            master
+            and not diverging
+            and config.train.loss_patience_steps > 0
+            and smooth_loss is not None
+        ):
             # Don't trigger during LR warmup (loss wobbles while LR ramps) and
             # NEVER before the minimum-token floor: at constant peak LR the loss
             # ema plateaus/bounces for long stretches without setting new bests,
@@ -516,7 +577,11 @@ def main() -> None:
             # (this exact false-stop wasted hours of idle GPU billing once).
             past_warmup = step > config.optim.warmup_steps
             past_min_tokens = tokens_seen >= config.train.minimum_tokens_before_stop
-            if past_warmup and past_min_tokens and (step - last_best_step) > config.train.loss_patience_steps:
+            if (
+                past_warmup
+                and past_min_tokens
+                and (step - last_best_step) > config.train.loss_patience_steps
+            ):
                 diverging = True
                 print(
                     "Stopping: train_loss_ema "
@@ -528,10 +593,13 @@ def main() -> None:
                 )
 
         if master and last_metrics:
-            core_ok = last_metrics.get("core_metric", -1.0) >= config.train.early_stop_core
+            core_ok = (
+                last_metrics.get("core_metric", -1.0) >= config.train.early_stop_core
+            )
             if config.train.require_humaneval_for_stop:
                 humaneval_ok = (
-                    last_metrics.get("humaneval_pass_at_1", -1.0) >= config.train.early_stop_humaneval
+                    last_metrics.get("humaneval_pass_at_1", -1.0)
+                    >= config.train.early_stop_humaneval
                 )
             else:
                 humaneval_ok = True
@@ -571,6 +639,7 @@ def main() -> None:
         # Status sentinel so the pipeline can refuse to run SFT on a collapsed
         # model (the orchestration bug that wasted a run).
         import json as _json
+
         status = {
             "collapsed": bool(ended_in_collapse),
             "step": int(step),

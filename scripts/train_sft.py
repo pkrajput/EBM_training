@@ -30,7 +30,9 @@ from train_191m import EBTLossWrapper, init_distributed, precision_context, prin
 
 
 def latest_checkpoint(out_dir: Path) -> Path | None:
-    checkpoints = sorted(out_dir.glob("ckpt_step_*.pt"), key=lambda p: int(p.stem.split("_")[-1]))
+    checkpoints = sorted(
+        out_dir.glob("ckpt_step_*.pt"), key=lambda p: int(p.stem.split("_")[-1])
+    )
     if checkpoints:
         return checkpoints[-1]
     ckpt = out_dir / "ckpt_latest.pt"
@@ -38,7 +40,9 @@ def latest_checkpoint(out_dir: Path) -> Path | None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="SFT/post-train an EBT checkpoint into a conversational model.")
+    parser = argparse.ArgumentParser(
+        description="SFT/post-train an EBT checkpoint into a conversational model."
+    )
     parser.add_argument("--config", default="configs/ebt_1b_climbmix.json")
     parser.add_argument("--base-checkpoint", required=True)
     parser.add_argument("--resume-from", default=None)
@@ -47,7 +51,9 @@ def main() -> None:
 
     config = load_config(args.config)
     config.train.device_batch_size = config.post_train.device_batch_size
-    config.train.gradient_accumulation_steps = config.post_train.gradient_accumulation_steps
+    config.train.gradient_accumulation_steps = (
+        config.post_train.gradient_accumulation_steps
+    )
     config.train.max_steps = config.post_train.max_steps
     config.train.precision = config.post_train.precision
     config.train.compile_model = config.post_train.compile_model
@@ -90,7 +96,9 @@ def main() -> None:
         except Exception as exc:
             print0(rank, f"W&B init failed, continuing with JSONL metrics only: {exc}")
 
-    tokenizer = AutoTokenizer.from_pretrained(config.data.tokenizer, clean_up_tokenization_spaces=False)
+    tokenizer = AutoTokenizer.from_pretrained(
+        config.data.tokenizer, clean_up_tokenization_spaces=False
+    )
     train_loader = iter(
         JsonlSFTLoader(
             tokenizer=tokenizer,
@@ -130,8 +138,13 @@ def main() -> None:
     # of true SFT and is what's actually proven to work in this codebase.
     model, _ = build_model(config, device=device, execution_mode="pretrain")
     raw_model = model
-    start_step, tokens_seen, _ = load_checkpoint(args.base_checkpoint, raw_model, strict=True)
-    print0(rank, f"Loaded base checkpoint {args.base_checkpoint} (base_step={start_step}, base_tokens={tokens_seen:,})")
+    start_step, tokens_seen, _ = load_checkpoint(
+        args.base_checkpoint, raw_model, strict=True
+    )
+    print0(
+        rank,
+        f"Loaded base checkpoint {args.base_checkpoint} (base_step={start_step}, base_tokens={tokens_seen:,})",
+    )
 
     loss_module: torch.nn.Module = EBTLossWrapper(raw_model)
     if config.post_train.compile_model:
@@ -173,6 +186,7 @@ def main() -> None:
     # checkpoint so a late collapse never costs us the good SFT model.
     import math as _math
     from collections import deque
+
     try:
         _vocab_size = int(getattr(raw_model, "vocab_size", tokenizer.vocab_size))
     except Exception:
@@ -180,8 +194,8 @@ def main() -> None:
     uniform_loss = _math.log(max(_vocab_size, 2))
     collapse_streak = 0
     grad_norm_history: deque[float] = deque(maxlen=100)
-    grad_spike_mult = float(getattr(config.optim, "grad_spike_mult", 0.0) or 8.0)
-    grad_spike_abs = float(getattr(config.optim, "grad_spike_abs", 0.0) or 0.0)
+    grad_spike_mult = float(getattr(config.optim, "grad_spike_mult", 0.0) or 50.0)
+    grad_spike_abs = float(getattr(config.optim, "grad_spike_abs", 0.0) or 50.0)
     skipped_steps = 0
     best_sft_ema = float("inf")
 
@@ -215,7 +229,9 @@ def main() -> None:
         if scaler is not None:
             scaler.unscale_(optimizer)
         clip_val = config.optim.grad_clip if config.optim.grad_clip > 0 else 1e9
-        total_norm = float(torch.nn.utils.clip_grad_norm_(raw_model.parameters(), clip_val))
+        total_norm = float(
+            torch.nn.utils.clip_grad_norm_(raw_model.parameters(), clip_val)
+        )
         skip_update = False
         if not _math.isfinite(total_norm):
             skip_update = True
@@ -236,7 +252,10 @@ def main() -> None:
             if scaler is not None:
                 scaler.update()
             if master and skipped_steps % 5 == 1:
-                print0(rank, f"[grad-spike guard] SFT step {step}: SKIPPED (grad_norm={total_norm:.1f}, total={skipped_steps}).")
+                print0(
+                    rank,
+                    f"[grad-spike guard] SFT step {step}: SKIPPED (grad_norm={total_norm:.1f}, total={skipped_steps}).",
+                )
         else:
             if _math.isfinite(total_norm):
                 grad_norm_history.append(total_norm)
@@ -248,7 +267,9 @@ def main() -> None:
 
         sft_tokens_seen += global_tokens_per_step
         loss_value = float(loss.detach().item())
-        smooth_loss = loss_value if smooth_loss is None else 0.9 * smooth_loss + 0.1 * loss_value
+        smooth_loss = (
+            loss_value if smooth_loss is None else 0.9 * smooth_loss + 0.1 * loss_value
+        )
         if master and abs(loss_value - uniform_loss) < 0.02 and step > step0 + 20:
             collapse_streak += 1
         else:
@@ -263,12 +284,17 @@ def main() -> None:
                 "sft/train_loss": loss_value,
                 "sft/train_loss_ema": smooth_loss,
                 "sft/lr": optimizer.param_groups[0]["lr"],
-                "sft/tok_per_sec": global_tokens_per_step * config.post_train.log_interval / max(dt, 1e-6),
+                "sft/tok_per_sec": global_tokens_per_step
+                * config.post_train.log_interval
+                / max(dt, 1e-6),
             }
             append_metrics(out_dir / "train_metrics.jsonl", metrics)
             if wandb_run is not None:
                 wandb_run.log(metrics)
-            print0(rank, f"sft step {step:06d} | loss {loss_value:.4f} | ema {smooth_loss:.4f}")
+            print0(
+                rank,
+                f"sft step {step:06d} | loss {loss_value:.4f} | ema {smooth_loss:.4f}",
+            )
 
         should_eval = (
             config.post_train.eval_interval > 0
@@ -282,7 +308,12 @@ def main() -> None:
         )
 
         if should_eval:
-            val_metrics = evaluate_loss(raw_model, build_val_loader(), config.post_train.eval_steps, autocast_context)
+            val_metrics = evaluate_loss(
+                raw_model,
+                build_val_loader(),
+                config.post_train.eval_steps,
+                autocast_context,
+            )
             if master:
                 payload = {
                     "step": step,
@@ -322,19 +353,36 @@ def main() -> None:
         # Always keep the BEST (lowest-ema) SFT checkpoint so a late collapse
         # can never cost us the good model. Save when we hit a new best at a
         # save interval boundary (keeps I/O bounded).
-        if master and should_save and smooth_loss is not None and smooth_loss < best_sft_ema:
+        if (
+            master
+            and should_save
+            and smooth_loss is not None
+            and smooth_loss < best_sft_ema
+        ):
             best_sft_ema = float(smooth_loss)
             save_checkpoint(
-                out_dir / "ckpt_best.pt", raw_model, optimizer, scaler,
-                step, sft_tokens_seen, asdict_nested(config), last_metrics,
+                out_dir / "ckpt_best.pt",
+                raw_model,
+                optimizer,
+                scaler,
+                step,
+                sft_tokens_seen,
+                asdict_nested(config),
+                last_metrics,
             )
-            print0(rank, f"saved BEST SFT checkpoint at step {step} (ema={best_sft_ema:.4f})")
+            print0(
+                rank,
+                f"saved BEST SFT checkpoint at step {step} (ema={best_sft_ema:.4f})",
+            )
 
         # Uniform-collapse kill-switch (SFT collapsed once mid-training). Stop
         # fast; the BEST checkpoint above preserves the good model for eval.
         stop_now = False
         if master and collapse_streak >= 50:
-            print0(rank, f"Stopping SFT: UNIFORM-VOCAB COLLAPSE (~ln(vocab)={uniform_loss:.3f}) for {collapse_streak} steps; best preserved in ckpt_best.pt.")
+            print0(
+                rank,
+                f"Stopping SFT: UNIFORM-VOCAB COLLAPSE (~ln(vocab)={uniform_loss:.3f}) for {collapse_streak} steps; best preserved in ckpt_best.pt.",
+            )
             stop_now = True
         if ddp:
             flag = torch.tensor(int(stop_now), device=device)
@@ -348,7 +396,10 @@ def main() -> None:
 
     if master:
         code_metrics = evaluate_humaneval(raw_model, config, device)
-        append_metrics(out_dir / "eval_metrics.jsonl", {"step": config.post_train.max_steps, **code_metrics})
+        append_metrics(
+            out_dir / "eval_metrics.jsonl",
+            {"step": config.post_train.max_steps, **code_metrics},
+        )
         if wandb_run is not None:
             wandb_run.log({"step": config.post_train.max_steps, **code_metrics})
         save_checkpoint(

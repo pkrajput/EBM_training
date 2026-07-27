@@ -461,10 +461,14 @@ def main() -> None:
         )
 
         if should_eval:
-            val_metrics = evaluate_loss(
-                raw_model, build_val_loader(), config.train.eval_steps, autocast_context
-            )
-            if master:
+            try:
+                val_metrics = evaluate_loss(
+                    raw_model, build_val_loader(), config.train.eval_steps, autocast_context
+                )
+            except Exception as exc:  # never let a val-eval hiccup kill a long run
+                val_metrics = None
+                print0(rank, f"[warn] val eval failed at step {step}, continuing: {exc}")
+            if val_metrics is not None and master:
                 last_metrics.update(val_metrics)
                 payload = {"step": step, "tokens_seen": tokens_seen, **val_metrics}
                 append_metrics(out_dir / "eval_metrics.jsonl", payload)
@@ -498,8 +502,12 @@ def main() -> None:
 
         core_metrics = None
         if should_core:
-            core_metrics = evaluate_core_metric(raw_model, config, device)
-            if master:
+            try:
+                core_metrics = evaluate_core_metric(raw_model, config, device)
+            except Exception as exc:  # CORE eval must never crash the training run
+                core_metrics = None
+                print0(rank, f"[warn] CORE eval failed at step {step}, continuing: {exc}")
+            if core_metrics is not None and master:
                 last_metrics.update(core_metrics)
                 payload = {"step": step, "tokens_seen": tokens_seen, **core_metrics}
                 append_metrics(out_dir / "eval_metrics.jsonl", payload)
@@ -522,30 +530,36 @@ def main() -> None:
                 )
 
         if master and should_humaneval:
-            code_metrics = evaluate_humaneval(raw_model, config, device)
-            last_metrics.update(code_metrics)
-            payload = {"step": step, "tokens_seen": tokens_seen, **code_metrics}
-            append_metrics(out_dir / "eval_metrics.jsonl", payload)
-            if wandb_run is not None:
-                wandb_run.log(payload)
-            print(
-                f"HumanEval step {step}: pass@1={code_metrics['humaneval_pass_at_1']:.4f}",
-                flush=True,
-            )
+            try:
+                code_metrics = evaluate_humaneval(raw_model, config, device)
+                last_metrics.update(code_metrics)
+                payload = {"step": step, "tokens_seen": tokens_seen, **code_metrics}
+                append_metrics(out_dir / "eval_metrics.jsonl", payload)
+                if wandb_run is not None:
+                    wandb_run.log(payload)
+                print(
+                    f"HumanEval step {step}: pass@1={code_metrics['humaneval_pass_at_1']:.4f}",
+                    flush=True,
+                )
+            except Exception as exc:  # keep master alive so DDP does not deadlock at the barrier
+                print(f"[warn] HumanEval failed at step {step}, continuing: {exc}", flush=True)
 
         if master and should_mbpp:
-            from energy_coding.evaluation import evaluate_mbpp
+            try:
+                from energy_coding.evaluation import evaluate_mbpp
 
-            mbpp_metrics = evaluate_mbpp(raw_model, config, device)
-            last_metrics.update(mbpp_metrics)
-            payload = {"step": step, "tokens_seen": tokens_seen, **mbpp_metrics}
-            append_metrics(out_dir / "eval_metrics.jsonl", payload)
-            if wandb_run is not None:
-                wandb_run.log(payload)
-            print(
-                f"MBPP step {step}: pass@1={mbpp_metrics['mbpp_pass_at_1']:.4f} bon={mbpp_metrics['mbpp_pass_at_1_bon']:.4f}",
-                flush=True,
-            )
+                mbpp_metrics = evaluate_mbpp(raw_model, config, device)
+                last_metrics.update(mbpp_metrics)
+                payload = {"step": step, "tokens_seen": tokens_seen, **mbpp_metrics}
+                append_metrics(out_dir / "eval_metrics.jsonl", payload)
+                if wandb_run is not None:
+                    wandb_run.log(payload)
+                print(
+                    f"MBPP step {step}: pass@1={mbpp_metrics['mbpp_pass_at_1']:.4f} bon={mbpp_metrics['mbpp_pass_at_1_bon']:.4f}",
+                    flush=True,
+                )
+            except Exception as exc:  # keep master alive so DDP does not deadlock at the barrier
+                print(f"[warn] MBPP failed at step {step}, continuing: {exc}", flush=True)
 
         if ddp and (
             should_eval or should_save or should_core or should_humaneval or should_mbpp

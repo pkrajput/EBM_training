@@ -395,13 +395,8 @@ def main() -> None:
             break
 
     if master:
-        code_metrics = evaluate_humaneval(raw_model, config, device)
-        append_metrics(
-            out_dir / "eval_metrics.jsonl",
-            {"step": config.post_train.max_steps, **code_metrics},
-        )
-        if wandb_run is not None:
-            wandb_run.log({"step": config.post_train.max_steps, **code_metrics})
+        # Save the final weights BEFORE the humaneval pass: a network hiccup
+        # during the benchmark must never cost us the trained model.
         save_checkpoint(
             out_dir / "ckpt_final.pt",
             raw_model,
@@ -410,8 +405,18 @@ def main() -> None:
             config.post_train.max_steps,
             sft_tokens_seen,
             asdict_nested(config),
-            {**last_metrics, **code_metrics},
+            last_metrics,
         )
+        try:
+            code_metrics = evaluate_humaneval(raw_model, config, device)
+            append_metrics(
+                out_dir / "eval_metrics.jsonl",
+                {"step": config.post_train.max_steps, **code_metrics},
+            )
+            if wandb_run is not None:
+                wandb_run.log({"step": config.post_train.max_steps, **code_metrics})
+        except Exception as exc:
+            print0(rank, f"[warn] final humaneval failed, continuing: {exc}")
     if ddp:
         dist.destroy_process_group()
     if wandb_run is not None:

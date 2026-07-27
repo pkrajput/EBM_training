@@ -624,7 +624,13 @@ class JsonlSFTLoader:
             for line_idx, line in enumerate(f):
                 if line_idx % self.world_size != self.rank:
                     continue
-                record = json.loads(line)
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    record = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
                 text = record.get("text", "")
                 ids = self.tokenizer.encode(text, add_special_tokens=False)
                 if not ids:

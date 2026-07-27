@@ -52,7 +52,11 @@ runs/
 **/*.pt
 Miniconda3-latest-MacOSX-arm64.sh
 *.tar.gz
+*.tar
 *.zip
+
+# Downloaded deliverables / bundles pulled from the GPU box
+exports/
 
 # Cloned-on-demand on the GPU box by setup_gpu.sh / setup_gpu_blackwell.sh
 # (not tracked here: keeps pushes fast, avoids submodule churn).

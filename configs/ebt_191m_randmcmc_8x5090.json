@@ -9,37 +9,30 @@
     "num_transformer_blocks": 12,
     "multiheaded_attention_heads": 16,
     "embedding_dim": 1024,
-
     "mcmc_num_steps": 1,
     "mcmc_step_size": 0.5,
     "mcmc_step_size_learnable": false,
     "mcmc_step_size_lr_multiplier": 1.5,
     "langevin_dynamics_noise": 3.0,
     "langevin_dynamics_noise_learnable": false,
-
     "randomize_mcmc_step_size_scale": 2.0,
     "randomize_mcmc_num_steps": 3,
     "randomize_mcmc_num_steps_min": 2,
     "randomize_mcmc_num_steps_final_landscape": false,
-
     "denoising_initial_condition": "random_noise",
     "gaussian_random_noise_scaling": 1.0,
     "normalize_initial_condition": true,
-
-    "mcmc_replay_buffer": true,
+    "mcmc_replay_buffer": false,
     "mcmc_replay_buffer_size": 48,
     "mcmc_replay_buffer_sample_bs_percent": 0.25,
-
     "truncate_mcmc": true,
     "no_mcmc_detach": true,
     "clamp_futures_grad": true,
     "clamp_futures_grad_max_change": 9.0,
-
     "norm_pred": true,
     "norm_pred_not_final_step": false,
     "scale_alpha_with_energy": true,
     "scale_alpha_with_energy_temp": 1.0,
-
     "contrastive_loss": false,
     "reconstruction_coeff": 1.0
   },
@@ -56,8 +49,8 @@
   "train": {
     "run_name": "ebt-191m-randmcmc-8x5090",
     "out_dir": "runs/ebt_191m_randmcmc_8x5090",
-    "device_batch_size": 1,
-    "gradient_accumulation_steps": 16,
+    "device_batch_size": 2,
+    "gradient_accumulation_steps": 8,
     "precision": "bf16",
     "compile_model": false,
     "resume": true,
@@ -79,11 +72,11 @@
     "mbpp_max_problems": 10,
     "mbpp_self_verify_samples": 1,
     "mbpp_max_new_tokens": 192,
-    "target_tokens": 3500000000,
+    "target_tokens": 4000000000,
     "max_steps": -1,
-    "early_stop_core": 0.30,
+    "early_stop_core": 0.3,
     "minimum_tokens_before_stop": 3000000000,
-    "loss_patience_steps": 3000,
+    "loss_patience_steps": 0,
     "wandb_project": "energy-coding-pretrain-191m-randmcmc"
   },
   "post_train": {
@@ -100,8 +93,8 @@
     "weight_decay": 0.0,
     "warmup_steps": 150,
     "warmdown_ratio": 0.5,
-    "device_batch_size": 1,
-    "gradient_accumulation_steps": 32,
+    "device_batch_size": 2,
+    "gradient_accumulation_steps": 16,
     "log_interval": 10,
     "eval_interval": 200,
     "save_interval": 200,
